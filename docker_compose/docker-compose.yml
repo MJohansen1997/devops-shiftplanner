@@ -1,0 +1,35 @@
+version: "3"
+services:
+  app:
+    container_name: curriculum-front
+    image: index.docker.io/popemorris/shiftplanner-frontend:latest
+    env_file:
+      - .env.front
+    networks:
+      - local_net
+    depends_on:
+      - api
+      - db
+    ports:
+      - "3000:3000"
+  api:
+    container_name: curriculum-back
+    image: index.docker.io/popemorris/shiftplanner-backend:latest
+    env_file:
+      - .env.back
+      - .env.db
+    networks:
+      - local_net
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $HOME/.docker/config.json:/config.json
+    command: --interval 30
+networks:
+  local_net:
+    driver: bridge

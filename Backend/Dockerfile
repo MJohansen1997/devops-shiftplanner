@@ -4,4 +4,4 @@ COPY Backend/package*.json ./
 RUN npm install
 COPY Backend ./
 RUN ls -l
-CMD ["npm", "run", "prod"]
+CMD ["npm", "start"]

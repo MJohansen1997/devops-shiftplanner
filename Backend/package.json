@@ -5,7 +5,8 @@
     "license": "MIT",
     "scripts": {
         "start": "nodemon -e ts,json --exec ts-node ./src/server.ts",
-        "dev": "nodemon -x ts-node src/server.ts"
+        "dev": "nodemon -x ts-node src/server.ts",
+        "prod": "node ./src/server.ts"
     },
     "dependencies": {
         "@types/bcryptjs": "^2.4.2",
