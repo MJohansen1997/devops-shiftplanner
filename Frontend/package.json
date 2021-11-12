@@ -34,6 +34,7 @@
         "yarn": "^1.22.11"
     },
     "scripts": {
+        "prod": "node nodeServer.js",
         "start": "craco start",
         "build": "craco build",
         "test": "craco test",
