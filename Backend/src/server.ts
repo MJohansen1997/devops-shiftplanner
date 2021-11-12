@@ -1,9 +1,9 @@
 import cors from 'cors'
 import express from 'express'
-import { connect } from 'mongodb'
+import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
-import { DbSettings, EmployeeDisplay, IFruitData, User } from './Types'
+import { authUser, DbSettings, EmployeeDisplay, IFruitData, User } from './Types'
 
 export const Server = async () => {
     const rootDir = 'public'
@@ -32,7 +32,7 @@ export const Server = async () => {
     app.use(express.json())
 
     //if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(rootDir))
+    //app.use(express.static(rootDir))
     // } else {
     app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
     // }
@@ -54,12 +54,6 @@ export const Server = async () => {
 
     const fruitsColl = client.db('fruit').collection<IFruitData>('fruits')
     const userColl = client.db('shiftplanner').collection<User>('user')
-
-    app.get('/fruit', async (req, res) => {
-        const fruits: IFruitData[] = await fruitsColl.find({}).toArray()
-        console.log(fruits)
-        res.send(fruits)
-    })
 
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
         // if (!req.session || !req.session.data) {
@@ -83,7 +77,7 @@ export const Server = async () => {
         res.send(formattedEmployees)
     })
 
-    app.post('/createUser/uploadAvatar', upload.any(), async (req: RequestSession, res) => {
+    app.post('/api/createUser/uploadAvatar', upload.any(), async (req: RequestSession, res) => {
         const files = req.files as unknown as { [x: string]: Express.Multer.File }
 
         if (!req.session || !req.session.data) {
@@ -94,9 +88,34 @@ export const Server = async () => {
     })
 
     // Fetching all users for a specific date to use for the frontend calendar day view.
-    app.get('/fetchUsersForDay', async (req, res) => {
+    app.get('/api/getUsersForDay', async (req, res) => {
         const users = await userColl.find(req).toArray()
         res.send(users)
+    })
+
+    app.post('/api/getOneUser', async (req: RequestSession, res) => {
+        const args = req.body as Partial<authUser>
+
+        const user = await userColl.findOne({ _id: ObjectId(args.id) })
+
+        if (!user) {
+            return res.send({ success: false, errorMessage: 'Something went wrong retrieving your profile' })
+        }
+
+        const formattedProfile: EmployeeDisplay = {
+            username: user.username,
+            password: user.password,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            jobposition: user.jobposition,
+            phone: user.phone,
+            avatar: user.avatar,
+            birthday: user.birthday,
+            address: user.address,
+            createdDate: user.createdDate,
+        }
+        res.send(formattedProfile)
     })
 
     Auth({ app, client, userColl })

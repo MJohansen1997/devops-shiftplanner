@@ -71,16 +71,14 @@ export const Auth = ({
         email: string
     }
 
-    app.post('/register', async (req: Request<IRegisterProps>, res) => {
+    app.post('/api/register', async (req: Request<IRegisterProps>, res) => {
         const args = req.body as Partial<IRegisterProps>
-        console.log(args)
 
         if (req.session && req.session.data) {
             return res.send({ success: false, errorMessage: 'Already logged in' })
         }
 
         if (!args.username || args.username.length < 3) {
-            console.log(args.username)
             return res.send({ success: false, errorMessage: 'Username is too short' })
         }
 
@@ -149,7 +147,7 @@ export const Auth = ({
         res.send({ success: true })
     })
 
-    app.post('/login', async (req: RequestSession, res) => {
+    app.post('/api/login', async (req: RequestSession, res) => {
         if (req.session && req.session.data) {
             return res.send({ success: false, errorMessage: 'Already logged in' })
         }
@@ -173,11 +171,10 @@ export const Auth = ({
             },
         }
 
-        console.log(req.session!.data)
         return res.send({ success: true, data: req.session!.data })
     })
 
-    app.post('/logout', async (req: Request, res) => {
+    app.post('/api/logout', async (req: Request, res) => {
         if (!req.session || !req.session.data) {
             return res.send({ success: false, errorMessage: 'Not logged in' })
         }
