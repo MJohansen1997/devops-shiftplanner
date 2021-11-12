@@ -6,7 +6,7 @@ RUN npm install
 COPY Frontend ./
 RUN ls -l
 RUN npm run build
-COPY rontend/nodeServer.js server/nodeServer.js
+COPY Frontend/nodeServer.js server/nodeServer.js
 WORKDIR /usr/src/app/server
 EXPOSE 3000
 CMD [ "node", "nodeServer.js" ]
