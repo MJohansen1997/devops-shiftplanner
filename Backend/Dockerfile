@@ -1,7 +1,7 @@
 FROM node:lts-alpine
 WORKDIR /usr/src/app
 COPY Backend/package*.json ./
-RUN npm install
+RUN yarn install
 COPY Backend ./
 RUN ls -l
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

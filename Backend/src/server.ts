@@ -61,7 +61,7 @@ export const Server = async () => {
         res.send(fruits)
     })
 
-    app.get('/getEmployees', async (req: RequestSession, res) => {
+    app.get('/api/getEmployees', async (req: RequestSession, res) => {
         // if (!req.session || !req.session.data) {
         //     return res.send({ success: false, errorMessage: 'Not logged in' })
         // }
