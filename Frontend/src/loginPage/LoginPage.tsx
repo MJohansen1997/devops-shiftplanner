@@ -1,7 +1,7 @@
 import Axios from 'axios'
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
-import { authUser } from '../../../shiftplanserver/src/Types'
+import { authUser } from 'devops-shiftplanner/Backend/src/Types'
 import { RegisterForm } from '../components/RegisterForm/RegisterView'
 import { UserContext } from '../Context/UserContext'
 
@@ -19,7 +19,7 @@ export const LoginPage = () => {
             await Axios.post<
                 | { success: true; data: { user: { id: string; role: boolean } } }
                 | { success: false; errorMessage: string }
-            >('http://localhost:8080/login', authentication, { withCredentials: true })
+            >('http://localhost:8080/api/login', authentication, { withCredentials: true })
         ).data
 
         if (result.success) {
@@ -32,6 +32,13 @@ export const LoginPage = () => {
             alert(result.errorMessage)
         }
     }
+    
+    
+    const [isOpen, setIsOpen] = useState(false);
+    const togglePop = () => {
+        setIsOpen(!isOpen)
+    }
+
 
     return (
         <div className="flex bg-secondary h-screen w-screen">
@@ -65,7 +72,9 @@ export const LoginPage = () => {
                     </div>
                     <div className="mb-3 flex justify-between">
                         <p className="text-white text-xs underline">Forgot password?</p>
-                        <RegisterForm> Register </RegisterForm>
+                        <button className="text-white text-xs underline" onClick={togglePop}> Register </button>
+                        {isOpen && <RegisterForm popValues={{isOpen, setIsOpen}} />}
+                        {/* // <RegisterForm> Register </RegisterForm> */}
                     </div>
 
                     <div className="mb-3">
