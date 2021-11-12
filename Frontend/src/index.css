@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+div {
+    margin: 0;
+    font-family: Quicksand, cursive;
+}
