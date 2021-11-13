@@ -120,6 +120,7 @@ export const Server = async () => {
     })
 
     app.get('/api', async (req, res) => {
+        console.log("hello world")
         res.send("hi")
     })
 
