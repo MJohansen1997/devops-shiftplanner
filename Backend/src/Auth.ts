@@ -1,11 +1,8 @@
 import bcrypt from 'bcryptjs'
-import MongoStore from 'connect-mongo'
 import emailValidator from 'email-validator'
 import core from 'express-serve-static-core'
-import session from 'express-session'
-import moment from 'moment'
 import { Collection, MongoClient } from 'mongodb'
-import { User } from './Types'
+import { EmployeeDisplay, User } from './Types'
 
 export type Request<TSession = any> = core.Request & {
     session?: Express.Request['session'] & {
@@ -70,6 +67,33 @@ export const Auth = ({
         lastname: string
         email: string
     }
+
+    app.post('/api/random2', async (req: RequestSession, res) => {
+        console.log('hellotherefriend2')
+        res.send('hellotherefriend2')
+    })
+
+    app.get('/api/getEmployeesCheck', async (req: RequestSession, res) => {
+        // if (!req.session || !req.session.data) {
+        //     return res.send({ success: false, errorMessage: 'Not logged in' })
+        // }
+
+        const users = await userColl.find({}).toArray()
+
+        const formattedEmployees: EmployeeDisplay[] = users.map(u => {
+            return {
+                firstname: u.firstname,
+                lastname: u.lastname,
+                email: u.email,
+                jobposition: u.jobposition,
+                phone: u.phone,
+                avatar: u.avatar,
+                birthday: u.birthday,
+            }
+        })
+
+        res.send(formattedEmployees)
+    })
 
     app.post('/api/register', async (req, res) => {
         const args = req.body as Partial<IRegisterProps>
