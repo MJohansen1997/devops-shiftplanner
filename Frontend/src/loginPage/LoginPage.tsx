@@ -1,7 +1,7 @@
 import Axios from 'axios'
+import { authUser } from 'devops-shiftplanner/Backend/src/Types'
 import { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
-import { authUser } from 'devops-shiftplanner/Backend/src/Types'
 import { RegisterForm } from '../components/RegisterForm/RegisterView'
 import { UserContext } from '../Context/UserContext'
 
@@ -19,7 +19,7 @@ export const LoginPage = () => {
             await Axios.post<
                 | { success: true; data: { user: { id: string; role: boolean } } }
                 | { success: false; errorMessage: string }
-            >('http://localhost:8080/api/login', authentication, { withCredentials: true })
+            >('http://0.0.0.0:8080/api/login', authentication, { withCredentials: true })
         ).data
 
         if (result.success) {
