@@ -1,7 +1,8 @@
 FROM node:lts-alpine
 WORKDIR /usr/src/app
 COPY Frontend/package*.json ./
-RUN yarn add MJohansen1997/devops-shiftplanner
+RUN apk add git
+RUN yarn add https://github.com/MJohansen1997/devops-shiftplanner
 RUN ls -l
 RUN yarn install
 COPY Frontend ./
