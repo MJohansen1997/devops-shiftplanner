@@ -38,8 +38,8 @@ export const Server = async () => {
     // }
 
     const dbSettings: DbSettings = {
-        username: 'root',
-        password: '8m9SqwY234',
+        username: 'admin',
+        password: 'root',
         host: '130.225.170.205',
         port: '27017',
     }
@@ -116,6 +116,10 @@ export const Server = async () => {
             createdDate: user.createdDate,
         }
         res.send(formattedProfile)
+    })
+
+    app.get('/api', async (req, res) => {
+        res.send("hi")
     })
 
     Auth({ app, client, userColl })
