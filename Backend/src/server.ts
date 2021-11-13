@@ -1,10 +1,10 @@
+import bodyParser from 'body-parser'
 import cors from 'cors'
 import express from 'express'
 import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
 import { authUser, DbSettings, EmployeeDisplay, IFruitData, User } from './Types'
-import bodyParser from "body-parser";
 
 export const Server = async () => {
     const rootDir = 'public'
@@ -40,7 +40,7 @@ export const Server = async () => {
 
     const dbSettings: DbSettings = {
         username: 'admin',
-        password: 'root',
+        password: '8m9SqwY234',
         host: '130.225.170.205',
         port: '27017',
     }
@@ -57,8 +57,8 @@ export const Server = async () => {
     const userColl = client.db('shiftplanner').collection<User>('user')
 
     app.post('/api/random', async (req: RequestSession, res) => {
-        console.log("hellotherefriend")
-        res.send("hellotherefriend")
+        console.log('hellotherefriend')
+        res.send('hellotherefriend')
     })
 
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
@@ -125,14 +125,16 @@ export const Server = async () => {
     })
 
     app.get('/api', async (req, res) => {
-        console.log("hello world")
-        res.send("hi")
+        console.log('hello world')
+        res.send('hi')
     })
 
     Auth({ app, client, userColl })
-    app.use(bodyParser.json({
-        limit: '50mb'
-    }))
+    app.use(
+        bodyParser.json({
+            limit: '50mb',
+        })
+    )
     const port = process.env.NODE_ENV || 8080
 
     app.listen(port, () => console.log(`Listening on port ${port}!`))
