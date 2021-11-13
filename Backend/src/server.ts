@@ -56,6 +56,11 @@ export const Server = async () => {
     const fruitsColl = client.db('fruit').collection<IFruitData>('fruits')
     const userColl = client.db('shiftplanner').collection<User>('user')
 
+    app.post('/api/random', async (req: RequestSession, res) => {
+        console.log("hellotherefriend")
+        res.send("hellotherefriend")
+    })
+
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
         // if (!req.session || !req.session.data) {
         //     return res.send({ success: false, errorMessage: 'Not logged in' })
