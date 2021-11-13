@@ -9,10 +9,17 @@ export const LoginPage = () => {
     const history = useHistory()
 
     const { user, setUser } = useContext(UserContext)
+    const [randomData, setRandomData] = useState<string>()
     const [authentication, setAuthentication] = useState({
         username: '',
         password: '',
     })
+
+    const doRandomStuff = async () => {
+        const result = (await Axios.post<string>('http://localhost:8080/api/random', { withCredentials: true })).data
+        console.log(result)
+        setRandomData(result)
+    }
 
     const doLogin = async () => {
         console.log(authentication)
@@ -91,7 +98,7 @@ export const LoginPage = () => {
                     <div className="mb-3">
                         <button
                             className="flex rounded-lg bg-googleColor text-black pr-2 py-2 m-auto w-52 hover:bg-googleHover hover:text-white"
-                            onClick={() => console.log(user.id + user.role)}
+                            onClick={() => doRandomStuff()}
                         >
                             <img
                                 className="rounded-full object-scale-down h-6 w-10"
