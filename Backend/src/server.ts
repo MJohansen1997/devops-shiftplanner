@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import express from 'express'
@@ -59,6 +60,29 @@ export const Server = async () => {
     app.post('/api/random', async (req: RequestSession, res) => {
         console.log('hellotherefriend')
         res.send('hellotherefriend')
+    })
+
+    app.post('/api/login', async (req, res) => {
+        const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
+
+        console.log(authUser)
+
+        if (!authUser) {
+            return res.send({ success: false, errorMessage: 'Invalid password' })
+        }
+
+        if (!bcrypt.compareSync(req.body.password, authUser.password)) {
+            return res.send({ success: false, errorMessage: 'Invalid password' })
+        }
+
+        //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
+
+        const user = {
+            id: authUser._id.toHexString(),
+            role: authUser.role,
+        }
+
+        return res.send({ success: true, data: user })
     })
 
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
@@ -135,9 +159,9 @@ export const Server = async () => {
             limit: '50mb',
         })
     )
-    const port = 8080
+    const port = process.env.NODE_ENV || 8080
 
-    app.listen(port, '0.0.0.0', () => console.log(`Listening on port ${port}!`))
+    app.listen(port, () => console.log(`Listening on port ${port}!`))
 }
 
 Server()

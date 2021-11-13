@@ -15,15 +15,16 @@ export const LoginPage = () => {
     })
 
     const doLogin = async () => {
+        console.log(authentication)
         const result = (
             await Axios.post<
-                | { success: true; data: { user: { id: string; role: boolean } } }
-                | { success: false; errorMessage: string }
-            >('http://0.0.0.0:8080/api/login', authentication, { withCredentials: true })
+                { success: true; data: { id: string; role: boolean } } | { success: false; errorMessage: string }
+            >('http://localhost:8080/api/login', authentication, { withCredentials: true })
         ).data
 
         if (result.success) {
-            const formatUser: authUser = { id: result.data.user.id, role: result.data.user.role, loggedOn: true }
+            console.log(result.data)
+            const formatUser: authUser = { id: result.data.id, role: result.data.role, loggedOn: true }
             setUser(formatUser)
             console.log('Loggin user data' + user.id, user.role, user.loggedOn)
             history.push('/')
@@ -32,13 +33,11 @@ export const LoginPage = () => {
             alert(result.errorMessage)
         }
     }
-    
-    
-    const [isOpen, setIsOpen] = useState(false);
+
+    const [isOpen, setIsOpen] = useState(false)
     const togglePop = () => {
         setIsOpen(!isOpen)
     }
-
 
     return (
         <div className="flex bg-secondary h-screen w-screen">
@@ -72,8 +71,11 @@ export const LoginPage = () => {
                     </div>
                     <div className="mb-3 flex justify-between">
                         <p className="text-white text-xs underline">Forgot password?</p>
-                        <button className="text-white text-xs underline" onClick={togglePop}> Register </button>
-                        {isOpen && <RegisterForm popValues={{isOpen, setIsOpen}} />}
+                        <button className="text-white text-xs underline" onClick={togglePop}>
+                            {' '}
+                            Register{' '}
+                        </button>
+                        {isOpen && <RegisterForm popValues={{ isOpen, setIsOpen }} />}
                         {/* // <RegisterForm> Register </RegisterForm> */}
                     </div>
 
