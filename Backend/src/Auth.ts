@@ -148,6 +148,7 @@ export const Auth = ({
     })
 
     app.post('/api/login', async (req: RequestSession, res) => {
+        console.log("login attempted" + req)
         if (req.session && req.session.data) {
             return res.send({ success: false, errorMessage: 'Already logged in' })
         }

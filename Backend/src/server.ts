@@ -123,7 +123,7 @@ export const Server = async () => {
     })
 
     Auth({ app, client, userColl })
-
+    app.use(Auth)
     const port = process.env.NODE_ENV || 8080
 
     app.listen(port, () => console.log(`Listening on port ${port}!`))
