@@ -4,6 +4,7 @@ import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
 import { authUser, DbSettings, EmployeeDisplay, IFruitData, User } from './Types'
+import bodyParser from "body-parser";
 
 export const Server = async () => {
     const rootDir = 'public'
@@ -123,7 +124,9 @@ export const Server = async () => {
     })
 
     Auth({ app, client, userColl })
-    app.use(Auth)
+    app.use(bodyParser.json({
+        limit: '50mb'
+    }))
     const port = process.env.NODE_ENV || 8080
 
     app.listen(port, () => console.log(`Listening on port ${port}!`))
