@@ -26,7 +26,7 @@ export const LoginPage = () => {
         const result = (
             await Axios.post<
                 { success: true; data: { id: string; role: boolean } } | { success: false; errorMessage: string }
-            >('http://http://shiftplanner.devops.diplomportal.dk/api/login', authentication, { withCredentials: true })
+            >('http://shiftplanner.devops.diplomportal.dk/api/login', authentication, { withCredentials: true })
         ).data
 
         if (result.success) {
