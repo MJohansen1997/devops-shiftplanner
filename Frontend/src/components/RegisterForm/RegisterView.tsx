@@ -15,7 +15,9 @@ export const RegisterForm = props => {
     })
 
     const doRegister = async () => {
-        const result = await Axios.post('http://localhost:8080/api/register', formData, { withCredentials: true })
+        const result = await Axios.post(`${process.env.REACT_APP_URL}/api/register`, formData, {
+            withCredentials: true,
+        })
         console.log(result)
         return true
     }
@@ -48,12 +50,15 @@ export const RegisterForm = props => {
 
         doRegister()
     }
-    
-    
 
-    return (props.popValues.isOpen) ? (
-       <div> 
-            <PopUp trigger={props.popValues.isOpen} setTrigger={props.popValues.setIsOpen} formtype="Create new account" data-testId="PopUp">
+    return props.popValues.isOpen ? (
+        <div>
+            <PopUp
+                trigger={props.popValues.isOpen}
+                setTrigger={props.popValues.setIsOpen}
+                formtype="Create new account"
+                data-testId="PopUp"
+            >
                 <div className="flex flex-col pt-4 pb-4 justify-center">
                     <div className="flex flex-col space-y-8 justify-center items-center font-bold">
                         <form className="flex flex-col space-y-3 items-center" onSubmit={handleSubmit}>
@@ -131,7 +136,9 @@ export const RegisterForm = props => {
                         </form>
                     </div>
                 </div>
-            </PopUp> 
+            </PopUp>
         </div>
-    ) : (<> </>)
+    ) : (
+        <> </>
+    )
 }

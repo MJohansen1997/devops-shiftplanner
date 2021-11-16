@@ -16,8 +16,12 @@ export const LoginPage = () => {
     })
 
     const doRandomStuff = async () => {
-        const result = (await Axios.post<string>('http://localhost:8080/api/random', { withCredentials: true })).data
+        console.log(process.env.REACT_APP_URL)
+        console.log(process.env)
+        const result = (await Axios.post<string>(`${process.env.REACT_APP_URL}/api/random`, { withCredentials: true }))
+            .data
         console.log(result)
+        console.log(process.env.SHIFTPLANNER_URL)
         setRandomData(result)
     }
 
@@ -26,7 +30,7 @@ export const LoginPage = () => {
         const result = (
             await Axios.post<
                 { success: true; data: { id: string; role: boolean } } | { success: false; errorMessage: string }
-            >('http://shiftplanner.devops.diplomportal.dk/api/login', authentication, { withCredentials: true })
+            >(`${process.env.REACT_APP_URL}/api/login`, authentication, { withCredentials: true })
         ).data
 
         if (result.success) {

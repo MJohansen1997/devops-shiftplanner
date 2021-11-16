@@ -11,7 +11,9 @@ export const MyProfile = () => {
 
     const getOneUser = async () => {
         const result = (
-            await Axios.post<EmployeeDisplay>('http://localhost:8080/api/getOneUser', user, { withCredentials: true })
+            await Axios.post<EmployeeDisplay>(`${process.env.REACT_APP_URL}/api/getOneUser`, user, {
+                withCredentials: true,
+            })
         ).data
 
         setData(result)

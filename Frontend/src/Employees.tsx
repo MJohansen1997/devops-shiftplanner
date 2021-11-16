@@ -21,7 +21,7 @@ export const Employees = () => {
 
     const getAllUsers = async () => {
         const result = (
-            await Axios.get<EmployeeDisplay[]>('http://localhost:8080/api/getEmployees', { withCredentials: true })
+        await Axios.get<EmployeeDisplay[]>(`${process.env.REACT_APP_URL}/api/getEmployees`, { withCredentials: true })
         ).data
 
         console.log(result)
