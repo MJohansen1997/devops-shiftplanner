@@ -37,12 +37,12 @@ export const Server = async () => {
     //if (process.env.NODE_ENV === 'production') {
     //app.use(express.static(rootDir))
     // } else {
-    app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
+    app.use(cors({ credentials: true, origin: '*' }))
     // }
 
     const dbSettings: DbSettings = {
         username: 'admin',
-        password: '8m9SqwY234',
+            password: '8m9SqwY234',
         host: '130.225.170.205',
         port: '27017',
     }
