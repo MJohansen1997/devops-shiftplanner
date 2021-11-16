@@ -37,7 +37,7 @@ export const Server = async () => {
     //if (process.env.NODE_ENV === 'production') {
     //app.use(express.static(rootDir))
     // } else {
-    app.use(cors({ credentials: true, origin: true }))
+    app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
     // }
 
     const dbSettings: DbSettings = {
