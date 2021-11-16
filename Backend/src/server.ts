@@ -32,11 +32,12 @@ export const Server = async () => {
     })
 
     app.use(express.json())
+    //app.use(bodyParser.json())
 
     //if (process.env.NODE_ENV === 'production') {
     //app.use(express.static(rootDir))
     // } else {
-    app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
+    app.use(cors({ credentials: true, origin: true }))
     // }
 
     const dbSettings: DbSettings = {
@@ -157,11 +158,6 @@ export const Server = async () => {
     })
 
     Auth({ app, client, userColl })
-    app.use(
-        bodyParser.json({
-            limit: '50mb',
-        })
-    )
     const port = process.env.NODE_ENV || 8080
 
     app.listen(port, () => console.log(`Listening on port ${port}!`))
