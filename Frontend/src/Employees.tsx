@@ -1,8 +1,7 @@
 import Axios from 'axios'
+import { EmployeeDisplay } from 'devops-shiftplanner/Backend/src/Types'
 import { useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-// @ts-ignore
-import { EmployeeDisplay } from '../../shiftplanserver/src/Types'
 import { UserContext } from './Context/UserContext'
 
 export const Employees = () => {
@@ -21,7 +20,9 @@ export const Employees = () => {
 
     const getAllUsers = async () => {
         const result = (
-        await Axios.get<EmployeeDisplay[]>(`${process.env.REACT_APP_URL}/api/getEmployees`, { withCredentials: true })
+            await Axios.get<EmployeeDisplay[]>(`${process.env.REACT_APP_URL}/api/getEmployees`, {
+                withCredentials: true,
+            })
         ).data
 
         console.log(result)

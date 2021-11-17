@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import { CalendarDay } from './components/calendar_Components/Calendar/Calendar_Day/Calender_View_Day'
 import { Calendar } from './components/calendar_Components/Calendar/Calendar_Month/Calendar_View_Month'
@@ -18,6 +18,10 @@ export const MainBody = () => {
     const noAuth = () => <Redirect to={'/login'} />
 
     let [navBarCollapsed, setNavBarCollapsed] = useState(false)
+
+    useEffect(() => {
+        document.title = 'Shiftplanner'
+    })
 
     return (
         <div>

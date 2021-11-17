@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { EmployeeDisplay } from '../../shiftplanserver/src/Types'
+import { EmployeeDisplay } from 'devops-shiftplanner/Backend/src/Types'
 import { UserContext } from './Context/UserContext'
 
 export const MyProfile = () => {

@@ -5207,6 +5207,10 @@ detective@^5.2.0:
     defined "^1.0.0"
     minimist "^1.1.1"
 
+"devops-shiftplanner@https://github.com/MJohansen1997/devops-shiftplanner":
+  version "0.0.0"
+  resolved "https://github.com/MJohansen1997/devops-shiftplanner#d1b67a263752bbc492f143e742385a44bbd85a09"
+
 dezalgo@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/dezalgo/-/dezalgo-1.0.3.tgz#7f742de066fc748bc8db820569dddce49bf0d456"

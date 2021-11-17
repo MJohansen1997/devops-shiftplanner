@@ -1,6 +1,6 @@
 import Axios from 'axios'
+import { IRegisterProps } from 'devops-shiftplanner/Backend/src/Types'
 import { useState } from 'react'
-import { IRegisterProps } from '../../../../shiftplanserver/src/Types'
 import { PopUp } from '../PopUp/PopUp'
 
 export const RegisterForm = props => {

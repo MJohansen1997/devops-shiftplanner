@@ -1,5 +1,5 @@
-import React, { createContext, Dispatch, SetStateAction, useState } from 'react'
 import { authUser } from 'devops-shiftplanner/Backend/src/Types'
+import React, { createContext, Dispatch, SetStateAction, useState } from 'react'
 
 type authContextValue = {
     user: authUser
