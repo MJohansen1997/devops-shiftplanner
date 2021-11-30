@@ -27,7 +27,7 @@ export const MainBody = () => {
         <div>
             <BrowserRouter>
                 <Switch>
-                    <Route exact path="/login" render={() => <LoginPage />} />
+                    <Route exact path= {{process.env.REACT_APP_URL} + "/login"} render={() => <LoginPage />} />
 
                     <div className="flex flex-col min-h-screen">
                         <Header collapsed={navBarCollapsed} burgerMenuOnClick={setNavBarCollapsed} />
