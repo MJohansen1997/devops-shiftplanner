@@ -15,6 +15,7 @@ import { Settings } from './Settings'
 
 export const MainBody = () => {
     const { user, setUser } = useContext(UserContext)
+    const []
     const noAuth = () => <Redirect to={'/login'} />
 
     let [navBarCollapsed, setNavBarCollapsed] = useState(false)
@@ -27,7 +28,7 @@ export const MainBody = () => {
         <div>
             <BrowserRouter>
                 <Switch>
-                    <Route exact path= {{process.env.REACT_APP_URL} + "/login"} render={() => <LoginPage />} />
+                    <Route exact path="/login" render={() => <LoginPage />} />
 
                     <div className="flex flex-col min-h-screen">
                         <Header collapsed={navBarCollapsed} burgerMenuOnClick={setNavBarCollapsed} />
