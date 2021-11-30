@@ -15,7 +15,6 @@ import { Settings } from './Settings'
 
 export const MainBody = () => {
     const { user, setUser } = useContext(UserContext)
-    const []
     const noAuth = () => <Redirect to={'/login'} />
 
     let [navBarCollapsed, setNavBarCollapsed] = useState(false)
