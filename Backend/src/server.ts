@@ -37,12 +37,12 @@ export const Server = async () => {
     //if (process.env.NODE_ENV === 'production') {
     //app.use(express.static(rootDir))
     // } else {
-    app.use(cors({ credentials: true, origin: '*' }))
+    app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
     // }
 
     const dbSettings: DbSettings = {
         username: 'admin',
-            password: '8m9SqwY234',
+        password: '8m9SqwY234',
         host: '130.225.170.205',
         port: '27017',
     }
@@ -150,6 +150,12 @@ export const Server = async () => {
             createdDate: user.createdDate,
         }
         res.send(formattedProfile)
+    })
+
+    app.post('/api/getUsersForMonth', async (req, res) => {
+        const users = await userColl.find({"shifts.date": {$regex : "2021-11"}}).toArray()
+        // const users = await userColl.find({"shifts.date": {$regex : req}}).toArray()
+        res.send(users)
     })
 
     app.get('/api', async (req, res) => {
