@@ -4,9 +4,11 @@ import {
     endOfMonth,
     endOfWeek,
     format,
+    getISODay,
     getISOWeek,
     isSameDay,
     isSameMonth,
+    parseISO,
     startOfMonth,
     startOfWeek,
 } from 'date-fns'
@@ -14,22 +16,32 @@ import React, { useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import './Calendar_View__Month.css'
 import { ShiftComponent } from './Calender_Shift_Component'
+import Axios from 'axios'
 
 export const Calendar = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date())
     const history = useHistory()
 
-    const [shifts, setShifts] = useState([
+    const [workingUsers, setWorkingUsers] = useState([])
+    /*const [shifts, setShifts] = useState([
         { name: 'Shania', timeStart: '08:00', timeEnd: '16:00', date: new Date() },
         { name: 'Mikkel', timeStart: '10:00', timeEnd: '14:00', date: addDays(new Date(), -1) },
         { name: 'Mads', timeStart: '??:??', timeEnd: '??:??', date: new Date() },
         { name: 'Jacob', timeStart: '09:00', timeEnd: '16:00', date: addDays(new Date(), -3) },
     ])
+    */
     useEffect(() => {
-        //get('/something').then((responce) => {
-        // setShifts(response.data)
-        // }
-    }, shifts)
+        Axios({
+            method: 'post',
+            url: `${process.env.REACT_APP_URL}/api/getUsersForMonth`,
+            data: ''
+        }).then((response) => {
+            setWorkingUsers(response.data);
+        }).finally(() => {
+            console.log(workingUsers)
+            //{isSameDay(startOfMonth(new Date()), parseISO(workingUsers[1].shifts[1].date)) ? console.log("hi") : console.log("goodbye")}
+        });
+    }, [])
 
     const handleRoute = ({ onClick }) => {
         history.push(`/calenderDay`)
@@ -91,10 +103,10 @@ export const Calendar = () => {
 
         let days = []
         let day = startDate
-        console.log(shifts)
-        console.log('start day: ' + startDate)
-        console.log('Object Day: ' + shifts[0].date)
-        console.log(isSameDay(startDate, shifts[0].date))
+        // console.log(workingUsers)
+        // console.log('start day: ' + startDate)
+        // console.log('Object Day: ' + workingUsers[0].date)
+        // console.log(isSameDay(startDate, workingUsers[0].date))
         let formattedDate = ''
 
         while (day <= endDate) {
@@ -106,6 +118,7 @@ export const Calendar = () => {
             )
             //then we insert the days.
             for (let i = 0; i < 7; i++) {
+                console.log(i)
                 formattedDate = format(day, dateFormat)
                 days.push(
                     <div
@@ -114,20 +127,24 @@ export const Calendar = () => {
                         onClick={() => history.push('/calendarDay')}
                     >
                         <div className="number font-bold float-right pr-3 pt-3 text-xs ">{formattedDate}</div>
-                        <ul className="clear-right overflow-y-auto h-32 text-base disable-scrollbars">
-                            {shifts.map(({ name, timeStart, timeEnd, date }) =>
-                                // Link for routing to day page
-                                isSameDay(day, date) ? (
-                                    <li className={'float-left'}>
-                                        <Link to="/calendarDay">
-                                            <ShiftComponent name={name} timeStart={timeStart} timeEnd={timeEnd} />
-                                        </Link>{' '}
-                                    </li>
-                                ) : (
-                                    <li />
-                                )
+                        <div className="clear-right overflow-y-auto h-32 text-base disable-scrollbars">
+                            {workingUsers.map(({ firstname, shifts }) =>
+                                <ul>
+                                    {shifts.map(({ date, startTime, endTime }) =>
+                                    // Link for routing to day page
+                                    isSameDay(day, parseISO(date)) ? (
+                                        <li className={'float-left'}>
+                                            <Link to="/calendarDay">
+                                                <ShiftComponent name={firstname} timeStart={startTime} timeEnd={endTime} />
+                                            </Link>{' '}
+                                        </li>
+                                    ) : (
+                                        <li className='false'/>
+                                    )
+                                )}
+                                </ul>
                             )}
-                        </ul>
+                        </div>
                     </div>
                 )
                 day = addDays(day, 1)

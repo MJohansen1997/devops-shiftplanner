@@ -156,6 +156,12 @@ export const Server = async () => {
         res.send(formattedProfile)
     })
 
+    app.post('/api/getUsersForMonth', async (req, res) => {
+        const users = await userColl.find({"shifts.date": {$regex : "2021-11"}}).toArray()
+        // const users = await userColl.find({"shifts.date": {$regex : req}}).toArray()
+        res.send(users)
+    })
+
     app.get('/api', async (req, res) => {
         console.log('hello world')
         res.send('hi')
