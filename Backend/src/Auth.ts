@@ -171,6 +171,33 @@ export const Auth = ({
         res.send({ success: true })
     })
 
+    
+    app.post('/api/login', async (req, res) => {
+        console.log(req.body)
+        const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
+
+        console.log(authUser)
+
+        console.log(req.body.password)
+
+        if (!authUser) {
+            return res.send({ success: false, errorMessage: 'Invalid password' })
+        }
+
+        if (!bcrypt.compareSync(req.body.password, authUser.password)) {
+            return res.send({ success: false, errorMessage: 'Invalid password' })
+        }
+
+        //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
+
+        const user = {
+            id: authUser._id.toHexString(),
+            role: authUser.role,
+        }
+
+        return res.send({ success: true, data: user })
+    })
+    
     // app.post('/api/logout', async (req: Request, res) => {
     //     if (!req.session || !req.session.data) {
     //         return res.send({ success: false, errorMessage: 'Not logged in' })

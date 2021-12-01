@@ -65,9 +65,10 @@ export type EmployeeDisplay = {
 }
 
 export type UserDayShift = {
-    fisrtname: string
+    firstname?: string
     email: string
-    shift: Shift
+    shifts?: Shift[]
+    avatar?: Buffer
 }
 
 export type Shift = {

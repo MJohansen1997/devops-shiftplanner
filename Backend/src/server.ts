@@ -5,7 +5,7 @@ import express from 'express'
 import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
-import { authUser, DbSettings, EmployeeDisplay, IFruitData, User, Shift} from './Types'
+import { authUser, DbSettings, EmployeeDisplay, IFruitData, User, Shift, UserDayShift} from './Types'
 
 export const Server = async () => {
     const rootDir = 'public'
@@ -37,7 +37,7 @@ export const Server = async () => {
     //if (process.env.NODE_ENV === 'production') {
     //app.use(express.static(rootDir))
     // } else {
-    app.use(cors({ credentials: true, origin: '*' }))
+    app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
     // }
 
     const dbSettings: DbSettings = {
@@ -64,31 +64,7 @@ export const Server = async () => {
         res.send('hellotherefriend')
     })
 
-    app.post('/api/login', async (req, res) => {
-        console.log(req.body)
-        const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
-
-        console.log(authUser)
-
-        console.log(req.body.password)
-
-        if (!authUser) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
-
-        if (!bcrypt.compareSync(req.body.password, authUser.password)) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
-
-        //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
-
-        const user = {
-            id: authUser._id.toHexString(),
-            role: authUser.role,
-        }
-
-        return res.send({ success: true, data: user })
-    })
+    
 
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
         // if (!req.session || !req.session.data) {
@@ -124,20 +100,32 @@ export const Server = async () => {
 
     // Fetching all users for a specific date to use for the frontend calendar day view.
     // REQ = DATE
-    app.get('/fetchUsersShift', async (req, res) => {
+    app.post('/api/fetchUsersShift', async (req, res) => {
+        console.log("PRINTING REQ BODY: " + req.body.date)
         // get a shift
-        const shiftss = await shiftColl.find(req).toArray()
-        // Format the users from mongodb to the desired user shift information
-        const userShifts: Shift[] = shiftss.map(s => {
+        const users = await userColl.find({shifts: {$elemMatch: {date: req.body.date}}}).toArray();
+        const shiftss = await shiftColl.find({date: req.body.date}).toArray()
+        console.log("FETCH USERS: " + users)
+        
+        const filteredUsers = users.filter((item) => 
+            item.shifts?.filter(f => 
+                f.date == req.body.date
+            )
+        )
+        
+        console.log("FILTERED USERS: " + JSON.stringify(filteredUsers))
+        
+        // Format the users from mongod to the desired user shift information
+        const userShifts: UserDayShift[] = filteredUsers.map(s => {
             return {
-                _id: s._id,
-                emp_id: s.emp_id,
-                date: s.date,
-                startTime: s.startTime,
-                endTime: s.endTime         
+                firstname: s.firstname,
+                email: s.email,
+                shift: s.shifts     
             }
         })
-        
+    
+        // console.log("\nUSERSHIFTS: " + userShifts)
+    
         res.send(userShifts)
     })
 
