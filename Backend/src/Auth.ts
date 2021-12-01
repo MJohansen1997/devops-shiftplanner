@@ -1,11 +1,8 @@
 import bcrypt from 'bcryptjs'
-import MongoStore from 'connect-mongo'
 import emailValidator from 'email-validator'
 import core from 'express-serve-static-core'
-import session from 'express-session'
-import moment from 'moment'
 import { Collection, MongoClient } from 'mongodb'
-import { User } from './Types'
+import { EmployeeDisplay, User } from './Types'
 
 export type Request<TSession = any> = core.Request & {
     session?: Express.Request['session'] & {
@@ -42,25 +39,25 @@ export const Auth = ({
 
     app.set('trust proxy', 1)
 
-    app.use(
-        session({
-            secret: 'SomeRandomShit',
-            resave: true,
-            saveUninitialized: false,
-            name: 'shiftplanner',
-            store: MongoStore.create({ client, dbName: 'shiftplanner' }),
-            ...(process.env.NODE_ENV !== 'development' && { proxy: true }),
-            cookie: {
-                httpOnly: false,
-                sameSite: 'lax',
-                ...(process.env.NODE_ENV !== 'development' && {
-                    domain: 'devops.diplomportal.dk',
-                    sameSite: 'none',
-                    secure: true,
-                }),
-            },
-        })
-    )
+    // app.use(
+    //     session({
+    //         secret: 'SomeRandomShit',
+    //         resave: true,
+    //         saveUninitialized: false,
+    //         name: 'shiftplanner',
+    //         store: MongoStore.create({ client, dbName: 'shiftplanner' }),
+    //         ...(process.env.NODE_ENV !== 'development' && { proxy: true }),
+    //         cookie: {
+    //             httpOnly: false,
+    //             sameSite: 'lax',
+    //             ...(process.env.NODE_ENV !== 'development' && {
+    //                 domain: 'devops.diplomportal.dk',
+    //                 sameSite: 'none',
+    //                 secure: true,
+    //             }),
+    //         },
+    //     })
+    // )
 
     type IRegisterProps = {
         username: string
@@ -71,16 +68,41 @@ export const Auth = ({
         email: string
     }
 
-    app.post('/register', async (req: Request<IRegisterProps>, res) => {
-        const args = req.body as Partial<IRegisterProps>
-        console.log(args)
+    app.post('/api/random2', async (req: RequestSession, res) => {
+        console.log('hellotherefriend2')
+        res.send('hellotherefriend2')
+    })
 
-        if (req.session && req.session.data) {
-            return res.send({ success: false, errorMessage: 'Already logged in' })
-        }
+    app.get('/api/getEmployeesCheck', async (req: RequestSession, res) => {
+        // if (!req.session || !req.session.data) {
+        //     return res.send({ success: false, errorMessage: 'Not logged in' })
+        // }
+
+        const users = await userColl.find({}).toArray()
+
+        const formattedEmployees: EmployeeDisplay[] = users.map(u => {
+            return {
+                firstname: u.firstname,
+                lastname: u.lastname,
+                email: u.email,
+                jobposition: u.jobposition,
+                phone: u.phone,
+                avatar: u.avatar,
+                birthday: u.birthday,
+            }
+        })
+
+        res.send(formattedEmployees)
+    })
+
+    app.post('/api/register', async (req, res) => {
+        const args = req.body as Partial<IRegisterProps>
+
+        // if (req.session && req.session.data) {
+        //     return res.send({ success: false, errorMessage: 'Already logged in' })
+        // }
 
         if (!args.username || args.username.length < 3) {
-            console.log(args.username)
             return res.send({ success: false, errorMessage: 'Username is too short' })
         }
 
@@ -149,51 +171,23 @@ export const Auth = ({
         res.send({ success: true })
     })
 
-    app.post('/login', async (req: RequestSession, res) => {
-        if (req.session && req.session.data) {
-            return res.send({ success: false, errorMessage: 'Already logged in' })
-        }
+    // app.post('/api/logout', async (req: Request, res) => {
+    //     if (!req.session || !req.session.data) {
+    //         return res.send({ success: false, errorMessage: 'Not logged in' })
+    //     }
 
-        const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
+    //     await new Promise<void>(resolve => {
+    //         req.session?.destroy(err => {
+    //             if (err) {
+    //                 console.warn('Error while destroying session', err)
+    //             }
 
-        if (!authUser) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
+    //             resolve()
+    //         })
+    //     })
 
-        if (!bcrypt.compareSync(req.body.password, authUser.password)) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
+    //     req.session = undefined as any
 
-        req.session!.cookie.expires = moment().add(6, 'hour').toDate()
-
-        req.session!.data = {
-            user: {
-                id: authUser._id.toHexString(),
-                role: authUser.role,
-            },
-        }
-
-        console.log(req.session!.data)
-        return res.send({ success: true, data: req.session!.data })
-    })
-
-    app.post('/logout', async (req: Request, res) => {
-        if (!req.session || !req.session.data) {
-            return res.send({ success: false, errorMessage: 'Not logged in' })
-        }
-
-        await new Promise<void>(resolve => {
-            req.session?.destroy(err => {
-                if (err) {
-                    console.warn('Error while destroying session', err)
-                }
-
-                resolve()
-            })
-        })
-
-        req.session = undefined as any
-
-        return res.send({ success: true })
-    })
+    //     return res.send({ success: true })
+    // })
 }

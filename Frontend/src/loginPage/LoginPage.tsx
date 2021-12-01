@@ -1,7 +1,7 @@
 import Axios from 'axios'
-import React, { useContext, useState } from 'react'
+import { authUser } from 'devops-shiftplanner/Backend/src/Types'
+import { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
-import { authUser } from '../../../shiftplanserver/src/Types'
 import { RegisterForm } from '../components/RegisterForm/RegisterView'
 import { UserContext } from '../Context/UserContext'
 
@@ -9,21 +9,33 @@ export const LoginPage = () => {
     const history = useHistory()
 
     const { user, setUser } = useContext(UserContext)
+    const [randomData, setRandomData] = useState<string>()
     const [authentication, setAuthentication] = useState({
         username: '',
         password: '',
     })
 
+    const doRandomStuff = async () => {
+        console.log(process.env.REACT_APP_URL)
+        console.log(process.env)
+        const result = (await Axios.post<string>(`${process.env.REACT_APP_URL}/api/random`, { withCredentials: true }))
+            .data
+        console.log(result)
+        console.log(process.env.SHIFTPLANNER_URL)
+        setRandomData(result)
+    }
+
     const doLogin = async () => {
+        console.log(authentication)
         const result = (
             await Axios.post<
-                | { success: true; data: { user: { id: string; role: boolean } } }
-                | { success: false; errorMessage: string }
-            >('http://localhost:8080/login', authentication, { withCredentials: true })
+                { success: true; data: { id: string; role: boolean } } | { success: false; errorMessage: string }
+            >(`${process.env.REACT_APP_URL}/api/login`, authentication, { withCredentials: true })
         ).data
 
         if (result.success) {
-            const formatUser: authUser = { id: result.data.user.id, role: result.data.user.role, loggedOn: true }
+            console.log(result.data)
+            const formatUser: authUser = { id: result.data.id, role: result.data.role, loggedOn: true }
             setUser(formatUser)
             console.log('Loggin user data' + user.id, user.role, user.loggedOn)
             history.push('/')
@@ -31,6 +43,11 @@ export const LoginPage = () => {
             //@ts-ignore
             alert(result.errorMessage)
         }
+    }
+
+    const [isOpen, setIsOpen] = useState(false)
+    const togglePop = () => {
+        setIsOpen(!isOpen)
     }
 
     return (
@@ -65,7 +82,12 @@ export const LoginPage = () => {
                     </div>
                     <div className="mb-3 flex justify-between">
                         <p className="text-white text-xs underline">Forgot password?</p>
-                        <RegisterForm> Register </RegisterForm>
+                        <button className="text-white text-xs underline" onClick={togglePop}>
+                            {' '}
+                            Register{' '}
+                        </button>
+                        {isOpen && <RegisterForm popValues={{ isOpen, setIsOpen }} />}
+                        {/* // <RegisterForm> Register </RegisterForm> */}
                     </div>
 
                     <div className="mb-3">
@@ -80,7 +102,7 @@ export const LoginPage = () => {
                     <div className="mb-3">
                         <button
                             className="flex rounded-lg bg-googleColor text-black pr-2 py-2 m-auto w-52 hover:bg-googleHover hover:text-white"
-                            onClick={() => console.log(user.id + user.role)}
+                            onClick={() => doRandomStuff()}
                         >
                             <img
                                 className="rounded-full object-scale-down h-6 w-10"

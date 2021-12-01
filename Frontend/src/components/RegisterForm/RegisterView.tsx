@@ -1,10 +1,10 @@
 import Axios from 'axios'
+import { IRegisterProps } from 'devops-shiftplanner/Backend/src/Types'
 import { useState } from 'react'
-import { IRegisterProps } from '../../../../shiftplanserver/src/Types'
 import { PopUp } from '../PopUp/PopUp'
 
 export const RegisterForm = props => {
-    const [popUp, setPopUp] = useState(false)
+    const [popUp, setPopUp] = useState(props.setPopTrue)
     const [formData, setFormData] = useState<IRegisterProps>({
         username: '',
         password: '',
@@ -15,13 +15,14 @@ export const RegisterForm = props => {
     })
 
     const doRegister = async () => {
-        const result = await Axios.post('http://localhost:8080/register', formData, { withCredentials: true })
+        const result = await Axios.post(`${process.env.REACT_APP_URL}/api/register`, formData, {
+            withCredentials: true,
+        })
         console.log(result)
         return true
     }
 
-    const setPopUpAndClearForm = () => {
-        setPopUp(true)
+    const clearFormData = () => {
         setFormData({
             username: '',
             password: '',
@@ -31,8 +32,6 @@ export const RegisterForm = props => {
             email: '',
         })
     }
-
-    const validateInput = props => {}
 
     const handleChange = event => {
         const value = event.target.value
@@ -52,13 +51,14 @@ export const RegisterForm = props => {
         doRegister()
     }
 
-    return (
+    return props.popValues.isOpen ? (
         <div>
-            <button className="text-white text-xs underline" onClick={setPopUpAndClearForm}>
-                {props.children}
-            </button>
-
-            <PopUp trigger={popUp} setTrigger={setPopUp} formtype="Create new account">
+            <PopUp
+                trigger={props.popValues.isOpen}
+                setTrigger={props.popValues.setIsOpen}
+                formtype="Create new account"
+                data-testId="PopUp"
+            >
                 <div className="flex flex-col pt-4 pb-4 justify-center">
                     <div className="flex flex-col space-y-8 justify-center items-center font-bold">
                         <form className="flex flex-col space-y-3 items-center" onSubmit={handleSubmit}>
@@ -138,5 +138,7 @@ export const RegisterForm = props => {
                 </div>
             </PopUp>
         </div>
+    ) : (
+        <> </>
     )
 }
