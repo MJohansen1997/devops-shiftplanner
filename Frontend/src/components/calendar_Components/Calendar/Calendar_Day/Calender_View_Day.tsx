@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import { addMonths, format, isSameMonth, addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, getWeek, getISOWeek, isSameDay  } from "date-fns";
 import {Link} from "react-router-dom";
 import Axios from 'axios'
-import { IFruitData, User } from '../../../../../../ShiftplannerServer/src/Types'
+import { IFruitData, User } from 'devops-shiftplanner/Backend/src/Types'
 export const CalendarDay = () => {
 
     const [currentDay, setCurrentDay] = useState(new Date());
@@ -17,16 +17,16 @@ export const CalendarDay = () => {
 
     const [users, setUsers] = useState<User[]>([])
 
-    // const getUsers = async () => {
-    //     const result = (await Axios.get<User[]>('http://localhost:8080/fetchUsersForDay', {}, { withCredentials: true })).data
+    const getUsers = async () => {
+        const result = (await Axios.get<User[]>('http://localhost:8080/fetchUsers', { withCredentials: true }))
 
-    //     setUsers(result)
-    //     console.log(result)
-    // }
+        setUsers(result.data)
+        console.log(result)
+    }
 
-    // useEffect(() => {
-    //     getUsers()
-    // }, [])
+    useEffect(() => {
+        getUsers()
+    }, [])
 
    
     const renderUsers = (users: User[]) => {

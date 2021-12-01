@@ -1,9 +1,10 @@
 import cors from 'cors'
 import express from 'express'
+import { map } from 'lodash'
 import { connect } from 'mongodb'
 import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
-import { DbSettings, EmployeeDisplay, IFruitData, User } from './Types'
+import { DbSettings, EmployeeDisplay, IFruitData, Shift, User, UserDayShift } from './Types'
 
 export const Server = async () => {
     const rootDir = 'public'
@@ -38,7 +39,7 @@ export const Server = async () => {
     // }
 
     const dbSettings: DbSettings = {
-        username: 'root',
+        username: 'admin',
         password: '8m9SqwY234',
         host: '130.225.170.205',
         port: '27017',
@@ -54,6 +55,7 @@ export const Server = async () => {
 
     const fruitsColl = client.db('fruit').collection<IFruitData>('fruits')
     const userColl = client.db('shiftplanner').collection<User>('user')
+    const shiftColl = client.db('shiftplanner').collection<Shift>('shifts')
 
     app.get('/fruit', async (req, res) => {
         const fruits: IFruitData[] = await fruitsColl.find({}).toArray()
@@ -94,10 +96,27 @@ export const Server = async () => {
     })
 
     // Fetching all users for a specific date to use for the frontend calendar day view.
-    app.get('/fetchUsersForDay', async (req, res) => {
-        const users = await userColl.find(req).toArray()
-        res.send(users)
+    // REQ = DATE
+    app.get('/fetchUsersShift', async (req, res) => {
+        // get a shift
+        const shiftss = await shiftColl.find(req).toArray()
+        // Format the users from mongodb to the desired user shift information
+        const userShifts: Shift[] = shiftss.map(s => {
+            return {
+                _id: s._id,
+                emp_id: s.emp_id,
+                date: s.date,
+                startTime: s.startTime,
+                endTime: s.endTime         
+            }
+        })
+        
+        res.send(userShifts)
     })
+    
+    
+    
+    
 
     Auth({ app, client, userColl })
 
