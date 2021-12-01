@@ -18,7 +18,6 @@ export const Server = async () => {
     })
 
     const app = express()
-    console.log(process.env.NODE_ENV === 'development')
 
     if (process.env.NODE_ENV === 'production') {
         console.log('Whats popping prod')
@@ -27,11 +26,6 @@ export const Server = async () => {
     if (process.env.NODE_ENV === 'development') {
         console.log('Whats popping develop')
     }
-    console.log(process.env.USERNAMEDB)
-    console.log(process.env.PASSWORD)
-    console.log(process.env.PORT)
-    console.log(process.env.HOST)
-    console.log(process.env.NODE_ENV)
 
     app.disable('x-powered-by')
 
@@ -49,8 +43,6 @@ export const Server = async () => {
     //app.use(bodyParser.json())
 
     const portie = parseInt(process.env.PORT as string)
-
-    console.log(portie)
 
     if (process.env.NODE_ENV === 'production') {
         app.use(cors({ credentials: true, origin: `${process.env.CORSVALUE_PROD}` }))
@@ -77,17 +69,11 @@ export const Server = async () => {
     const userColl = client.db('shiftplanner').collection<User>('user')
 
     app.post('/api/random', async (req: RequestSession, res) => {
-        console.log('hellotherefriend')
         res.send('hellotherefriend')
     })
 
     app.post('/api/login', async (req, res) => {
-        console.log(req.body)
         const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
-
-        console.log(authUser)
-
-        console.log(req.body.password)
 
         if (!authUser) {
             return res.send({ success: false, errorMessage: 'Invalid password' })
