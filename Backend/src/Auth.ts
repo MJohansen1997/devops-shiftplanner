@@ -97,12 +97,12 @@ export const Auth = ({
         res.send(formattedEmployees)
     })
 
-    app.post('/api/register', async (req, res) => {
+    app.post('/api/register', async (req: RequestSession, res) => {
         const args = req.body as Partial<IRegisterProps>
 
-        // if (req.session && req.session.data) {
-        //     return res.send({ success: false, errorMessage: 'Already logged in' })
-        // }
+        if (req.session && req.session.data) {
+            return res.send({ success: false, errorMessage: 'Already logged in' })
+        }
 
         if (!args.username || args.username.length < 3) {
             return res.send({ success: false, errorMessage: 'Username is too short' })
@@ -216,23 +216,23 @@ export const Auth = ({
         return res.send({ success: true, data: req.session!.data.user })
     })
 
-    // app.post('/api/logout', async (req: Request, res) => {
-    //     if (!req.session || !req.session.data) {
-    //         return res.send({ success: false, errorMessage: 'Not logged in' })
-    //     }
+    app.post('/api/logout', async (req: Request, res) => {
+        if (!req.session || !req.session.data) {
+            return res.send({ success: false, errorMessage: 'Not logged in' })
+        }
 
-    //     await new Promise<void>(resolve => {
-    //         req.session?.destroy(err => {
-    //             if (err) {
-    //                 console.warn('Error while destroying session', err)
-    //             }
+        await new Promise<void>(resolve => {
+            req.session?.destroy(err => {
+                if (err) {
+                    console.warn('Error while destroying session', err)
+                }
 
-    //             resolve()
-    //         })
-    //     })
+                resolve()
+            })
+        })
 
-    //     req.session = undefined as any
+        req.session = undefined as any
 
-    //     return res.send({ success: true })
-    // })
+        return res.send({ success: true })
+    })
 }
