@@ -4,4 +4,5 @@ COPY Backend/package*.json ./
 RUN yarn install
 COPY Backend ./
 RUN ls -l
-CMD ["yarn", "start"]
+EXPOSE 8080
+CMD ["yarn", "prod"]

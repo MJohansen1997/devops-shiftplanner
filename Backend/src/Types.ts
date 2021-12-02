@@ -39,6 +39,7 @@ export type User = {
     avatar?: Buffer
     birthday?: Date
     firstname?: string
+    address?: string
     lastname?: string
     cpr?: string
     phone?: string
@@ -49,20 +50,34 @@ export type User = {
 }
 
 export type EmployeeDisplay = {
+    username?: string
+    password?: string
     firstname?: string
     lastname?: string
     email: string
     jobposition?: string
     phone?: string
+    address?: string
     avatar?: Buffer
     birthday?: Date
+    role?: string
+    createdDate?: Date
+}
+
+export type UserDayShift = {
+    firstname?: string
+    email: string
+    shift?: Shift[]
+    avatar?: Buffer
 }
 
 export type Shift = {
+    _id: ObjectId
+    emp_id: ObjectId
+    date: Date
     startTime: Date
     endTime: Date
-    date: Date
-    role: string
+    role?: string
     sickLeave?: boolean
     description?: string
 }
