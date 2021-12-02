@@ -64,11 +64,20 @@ export type EmployeeDisplay = {
     createdDate?: Date
 }
 
+export type UserDayShift = {
+    firstname?: string
+    email: string
+    shift?: Shift[]
+    avatar?: Buffer
+}
+
 export type Shift = {
+    _id: ObjectId
+    emp_id: ObjectId
+    date: Date
     startTime: Date
     endTime: Date
-    date: Date
-    role: string
+    role?: string
     sickLeave?: boolean
     description?: string
 }
