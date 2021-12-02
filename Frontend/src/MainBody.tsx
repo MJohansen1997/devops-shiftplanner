@@ -5,7 +5,6 @@ import { Calendar } from './components/calendar_Components/Calendar/Calendar_Mon
 import { EmployeeTable } from './components/table_Components/Table'
 import { UserContext } from './Context/UserContext'
 import { Employees } from './Employees'
-import { EmployeeTable } from './components/table_Components/Table'
 import { Header } from './Header'
 import { Home } from './Home'
 import { LoginPage } from './loginPage/LoginPage'

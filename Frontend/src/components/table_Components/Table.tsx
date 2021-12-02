@@ -7,6 +7,7 @@ import {data} from './Table_Component'
 import {Button, PageButton} from "./Table_Button.js";
 import { ChevronDoubleLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleRightIcon } from '@heroicons/react/solid'
 import Axios from "axios";
+import { TableOptions } from "../../react-table-config";
 
 
 
@@ -109,7 +110,14 @@ export const EmployeeTable = () => {
         setData(result)
         console.log(result)
     }
-
+    const getAvatar = (image: Buffer) => {
+        if (typeof image === 'undefined') {
+            return (
+                <img className="object-scale-down h-12 w-full" src="https://freesvg.org/img/abstract-user-flat-4.png" />
+            )
+        }
+        return image
+    }
     useEffect(() => {
         getAllUsers()
     }, [])
@@ -136,7 +144,7 @@ export const EmployeeTable = () => {
     } = tableInstance
 
     return (
-        <div className="bg-lightgrey px-8 py-8 m-10">
+        <div className="bg-lightSecondary dark:bg-primary text-white px-8 py-8 m-10">
             <p>Tilføj medarbejder</p>
             <p>Fjern medarbejder</p>
             <div className="sm:flex sm:gap-x-2">
@@ -151,7 +159,7 @@ export const EmployeeTable = () => {
                 )}
             </div>
             <table className="rounded border border-black" {...getTableProps()}>
-                <thead className="bg-darkgrey">
+                <thead className="bg-lightPrimary dark:bg-secondary">
                 {// Loop over the header rows
                     headerGroups.map(headerGroup => (
                         // Apply the header row props
@@ -159,7 +167,7 @@ export const EmployeeTable = () => {
                             {// Loop over the headers in each row
                                 headerGroup.headers.map(column => (
                                     // Apply the header cell props
-                                    <th className=" px-24 py-3 text-gray-500" {...column.getHeaderProps()}>
+                                    <th className=" px-24 py-3 text-white" {...column.getHeaderProps()}>
                                         {// Render the header
                                             column.render('Header')}
                                     </th>
@@ -177,15 +185,28 @@ export const EmployeeTable = () => {
                         prepareRow(row)
                         return (
                             // Apply the row props
-                            <tr class="text-center" {...row.getRowProps()}>
+                            <tr className="text-center" {...row.getRowProps()}>
                                 {// Loop over the rows cells
                                     row.cells.map(cell => {
                                         // Apply the cell props
                                         return (
-                                            <td class="p-4" {...cell.getCellProps()}>
+                                            /*<td className="p-4" {...cell.getCellProps()}>
                                                 {// Render the cell contents
                                                     cell.render('Cell')}
-                                            </td>
+                                            </td>*/
+
+                                            data.map(d => {
+                                                return(
+                                                    <>
+                                                        {/*<td>{getAvatar(d.avatar)}</td>*/}
+                                                        <td>{cell.render(d.firstname)}</td>
+                                                        {/*<td>{cell.render(d.birthday)}</td>*/}
+                                                        <td>{cell.render(d.jobposition)}</td>
+                                                        <td>{cell.render(d.phone)}</td>
+                                                        <td>{cell.render(d.email)}</td>
+                                                    </>
+                                            )
+                                            })
                                         )
                                     })}
                             </tr>
@@ -200,12 +221,12 @@ export const EmployeeTable = () => {
             <div className="py-3 flex items-center justify-between">
                 <div className="flex-1 flex justify-between sm:hidden">
                     {/*Is showed then the there is a small window width*/}
-                    <Button onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</Button>
-                    <Button onClick={() => nextPage()} disabled={!canNextPage}>Next</Button>
+                    <Button className="" onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</Button>
+                    <Button  className="" onClick={() => nextPage()} disabled={!canNextPage}>Next</Button>
                 </div>
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                     <div className="flex gap-x-2 items-baseline">
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-white">
                             {/*Page x out of y*/}
                             Page <span className="font-medium">{state.pageIndex + 1}</span> of <span className="font-medium">{pageOptions.length}</span>
                         </span>
@@ -213,7 +234,7 @@ export const EmployeeTable = () => {
                             {/*amount of listed employees*/}
                             <span className="sr-only">Items Per Page</span>
                             <select
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                className="mt-1 block w-full text-black rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                 value={state.pageSize}
                                 onChange={e => {
                                     setPageSize(Number(e.target.value))
@@ -239,6 +260,7 @@ export const EmployeeTable = () => {
                                 <ChevronDoubleLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                             </PageButton>
                             <PageButton
+                                className=""
                                 onClick={() => previousPage()}
                                 disabled={!canPreviousPage}
                             >
@@ -247,6 +269,7 @@ export const EmployeeTable = () => {
                                 <ChevronLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                             </PageButton>
                             <PageButton
+                                className=""
                                 onClick={() => nextPage()}
                                 disabled={!canNextPage
                                 }>

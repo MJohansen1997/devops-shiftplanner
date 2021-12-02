@@ -173,12 +173,12 @@ export const Auth = ({
 
     
     app.post('/api/login', async (req, res) => {
-        console.log(req.body)
+        // console.log(req.body)
         const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
 
-        console.log(authUser)
+        //console.log(authUser)
 
-        console.log(req.body.password)
+        // console.log(req.body.password)
 
         if (!authUser) {
             return res.send({ success: false, errorMessage: 'Invalid password' })
