@@ -74,26 +74,26 @@ export const Server = async () => {
         res.send('hellotherefriend')
     })
 
-    app.post('/api/login', async (req, res) => {
-        const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
+    // app.post('/api/login', async (req, res) => {
+    //     const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
 
-        if (!authUser) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
+    //     if (!authUser) {
+    //         return res.send({ success: false, errorMessage: 'Invalid password' })
+    //     }
 
-        if (!bcrypt.compareSync(req.body.password, authUser.password)) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
+    //     if (!bcrypt.compareSync(req.body.password, authUser.password)) {
+    //         return res.send({ success: false, errorMessage: 'Invalid password' })
+    //     }
 
-        //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
+    //     //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
 
-        const user = {
-            id: authUser._id.toHexString(),
-            role: authUser.role,
-        }
+    //     const user = {
+    //         id: authUser._id.toHexString(),
+    //         role: authUser.role,
+    //     }
 
-        return res.send({ success: true, data: user })
-    })
+    //     return res.send({ success: true, data: user })
+    // })
 
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
         // if (!req.session || !req.session.data) {
