@@ -1,6 +1,6 @@
 import Axios from 'axios'
 import { authUser } from 'devops-shiftplanner/Backend/src/Types'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import { RegisterForm } from '../components/RegisterForm/RegisterView'
 import { UserContext } from '../Context/UserContext'
@@ -15,16 +15,6 @@ export const LoginPage = () => {
         password: '',
     })
 
-    const doRandomStuff = async () => {
-        console.log(process.env.REACT_APP_URL)
-        console.log(process.env)
-        const result = (await Axios.post<string>(`${process.env.REACT_APP_URL}/api/random`, { withCredentials: true }))
-            .data
-        console.log(result)
-        console.log(process.env.SHIFTPLANNER_URL)
-        setRandomData(result)
-    }
-
     const doLogin = async () => {
         console.log(authentication)
         const result = (
@@ -32,8 +22,10 @@ export const LoginPage = () => {
                 { success: true; data: { id: string; role: boolean } } | { success: false; errorMessage: string }
             >(`${process.env.REACT_APP_URL}/api/login`, authentication, { withCredentials: true })
         ).data
+        console.log('Printing to check' + result.success)
 
         if (result.success) {
+            console.log('Printing to check some other shit' + result.data)
             console.log(result.data)
             const formatUser: authUser = { id: result.data.id, role: result.data.role, loggedOn: true }
             setUser(formatUser)
@@ -49,6 +41,12 @@ export const LoginPage = () => {
     const togglePop = () => {
         setIsOpen(!isOpen)
     }
+
+    useEffect(() => {
+        if (user.loggedOn) {
+            history.push('/')
+        }
+    }, [user.loggedOn])
 
     return (
         <div className="flex bg-secondary h-screen w-screen">
