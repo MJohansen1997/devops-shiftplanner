@@ -2,20 +2,18 @@ import React, {useState, useEffect} from "react";
 import { addMonths, format, isSameMonth, addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, getWeek, getISOWeek, isSameDay  } from "date-fns";
 import {Link} from "react-router-dom";
 import Axios from 'axios'
-import { IFruitData, User, Shift } from 'devops-shiftplanner/Backend/src/Types'
+import { IFruitData, User, Shift, UserDayShift } from 'devops-shiftplanner/Backend/src/Types'
 
 
 export const CalendarDay = () => {
     const [currentDay, setCurrentDay] = useState(new Date())
 
-    console.log(currentDay)
-
-    const [shifts, setShifts] = useState<Shift[]>([])
+    const [shifts, setShifts] = useState<UserDayShift[]>([])
 
     const getShifts = async () => {
         console.log("before get")
         try {
-            const result = (await Axios.post<Shift[]>('http://localhost:8080/api/fetchUsersShift', {date: "2021-11-27"}, { withCredentials: true })).data  
+            const result = (await Axios.post<[]>('http://localhost:8080/api/fetchUsersShift', {date: "2021-11-27"}, { withCredentials: true })).data  
             setShifts(result)
             console.log("printing result of fetch of users\n")
             console.log(result)
@@ -43,41 +41,24 @@ export const CalendarDay = () => {
     
     const renderShifts = () => {
         
-        console.log("inside render shifts: ")
-        return !shifts ? (
+        console.log("inside render shifts: " + JSON.stringify(shifts))
+        return shifts ? (
             <>
-                {shifts.map(({startTime, endTime}) => {
-
-                    <div className={`flex rounded-lg ml-1 border-2 border-black col-start-${user.startTime} col-end-${user.endTime} p-3 bg-amber-200 text-black font-bold justify-center`} key={index}>
-                        {user.startTime} : {user.endTime}
-                        {console.log(user.startTime + " " + user.endTime)}
-                    </div>
-                    
-                    // if (index % 2 == 0) {
-                    //     return (
-                    //         <div
-                    //             className="flex rounded-lg ml-1 border-2 border-black col-start-1 col-end-8 p-3 bg-amber-200 text-black font-bold justify-center"
-                    //             key={user}
-                    //         >
-                    //             {' '}
-                    //             {user._id} {index}{' '}
-                    //         </div>
-                    //     )
-                    // } 
-                    // else {
-                    //     return (
-                    //         <div
-                    //             className="flex rounded-lg ml-1 border-2 border-black col-start-4 col-end-12 p-3 bg-sky-200 text-black font-bold justify-center"
-                    //             key={user}
-                    //         >
-                    //             {' '}
-                    //             {user._id} {index}{' '}
-                    //         </div>
-                    //     )
-                    // }
-                    })
+                {shifts.map(({firstname, email, shifts}) => {
+                    return(
+                        {shifts.map(({startTime, endTime}) => {
+                            return (           
+                                <div className={`flex rounded-lg ml-1 border-2 border-black col-start-${startTime} col-end-${endTime} p-3 bg-amber-200 text-black font-bold justify-center`} key={firstname}>
+                                    {firstname}
+                                    {email}
+                                </div>
+                            )
+                        })}
+                    )
+                })
                 }
-            </>) : (<></>)
+             </>
+             ) : (<div> Loading elements.. </div>)
     }
 
     const renderHeader = () => {
@@ -121,9 +102,7 @@ export const CalendarDay = () => {
         return (
             <div className="flex flex-col flex-none max-h-screen mx-5 mt-5 bg-sky-100 ">
                 <div className="grid grid-cols-24 overflow-y-auto overflow-x-hidden gap-x-0 gap-y-2 pb-1 grid-flow-row border border-black bg-darkgrey">
-                    {columns}
-                    <div>test</div>        
-                    <div>test</div>        
+                    {columns}  
                     {renderShifts()}
                 </div>
             </div>
