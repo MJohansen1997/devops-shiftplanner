@@ -34,14 +34,16 @@ export const Calendar = () => {
         Axios({
             method: 'post',
             url: `${process.env.REACT_APP_URL}/api/getUsersForMonth`,
-            data: ''
+            data: {
+                "date": format(currentMonth, 'yyyy-MM'),
+                "datep1": format(addMonths(currentMonth, 1), 'yyyy-MM'),
+                "datem1": format(addMonths(currentMonth, -1), 'yyyy-MM')
+            }
         }).then((response) => {
             setWorkingUsers(response.data);
         }).finally(() => {
-            console.log(workingUsers)
-            //{isSameDay(startOfMonth(new Date()), parseISO(workingUsers[1].shifts[1].date)) ? console.log("hi") : console.log("goodbye")}
         });
-    }, [])
+    }, [currentMonth])
 
     const handleRoute = ({ onClick }) => {
         history.push(`/calenderDay`)
@@ -103,10 +105,6 @@ export const Calendar = () => {
 
         let days = []
         let day = startDate
-        // console.log(workingUsers)
-        // console.log('start day: ' + startDate)
-        // console.log('Object Day: ' + workingUsers[0].date)
-        // console.log(isSameDay(startDate, workingUsers[0].date))
         let formattedDate = ''
 
         while (day <= endDate) {
@@ -118,7 +116,6 @@ export const Calendar = () => {
             )
             //then we insert the days.
             for (let i = 0; i < 7; i++) {
-                console.log(i)
                 formattedDate = format(day, dateFormat)
                 days.push(
                     <div
