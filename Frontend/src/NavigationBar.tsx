@@ -14,7 +14,7 @@ export const NavigationBar = props => {
     const titles = ['Hjem', 'Vagtplan', 'Dine vagter', 'Medarbejdere']
 
     const IconHeader = title => {
-        ;<p className="pl-3">{title}</p>
+        <p className="pl-3">{title}</p>
     }
 
     function handleCollapse() {
