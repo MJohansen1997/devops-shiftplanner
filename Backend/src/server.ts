@@ -1,9 +1,11 @@
+import bcrypt from 'bcryptjs'
+import bodyParser from 'body-parser'
 import cors from 'cors'
 import express from 'express'
-import { connect } from 'mongodb'
+import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
-import { DbSettings, EmployeeDisplay, IFruitData, User } from './Types'
+import { authUser, DbSettings, EmployeeDisplay, IFruitData, User, Shift, UserDayShift} from './Types'
 
 export const Server = async () => {
     const rootDir = 'public'
@@ -30,15 +32,16 @@ export const Server = async () => {
     })
 
     app.use(express.json())
+    //app.use(bodyParser.json())
 
     //if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(rootDir))
+    //app.use(express.static(rootDir))
     // } else {
     app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
     // }
 
     const dbSettings: DbSettings = {
-        username: 'root',
+        username: 'admin',
         password: '8m9SqwY234',
         host: '130.225.170.205',
         port: '27017',
@@ -54,12 +57,14 @@ export const Server = async () => {
 
     const fruitsColl = client.db('fruit').collection<IFruitData>('fruits')
     const userColl = client.db('shiftplanner').collection<User>('user')
+    const shiftColl = client.db('shiftplanner').collection<Shift>('shifts')
 
-    app.get('/fruit', async (req, res) => {
-        const fruits: IFruitData[] = await fruitsColl.find({}).toArray()
-        console.log(fruits)
-        res.send(fruits)
+    app.post('/api/random', async (req: RequestSession, res) => {
+        console.log('hellotherefriend')
+        res.send('hellotherefriend')
     })
+
+    
 
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
         // if (!req.session || !req.session.data) {
@@ -83,7 +88,7 @@ export const Server = async () => {
         res.send(formattedEmployees)
     })
 
-    app.post('/createUser/uploadAvatar', upload.any(), async (req: RequestSession, res) => {
+    app.post('/api/createUser/uploadAvatar', upload.any(), async (req: RequestSession, res) => {
         const files = req.files as unknown as { [x: string]: Express.Multer.File }
 
         if (!req.session || !req.session.data) {
@@ -94,13 +99,67 @@ export const Server = async () => {
     })
 
     // Fetching all users for a specific date to use for the frontend calendar day view.
-    app.get('/fetchUsersForDay', async (req, res) => {
-        const users = await userColl.find(req).toArray()
-        res.send(users)
+    // REQ = DATE
+    app.post('/api/fetchUsersShift', async (req, res) => {
+        console.log("PRINTING REQ BODY: " + req.body.date)
+        // get a shift
+        const users = await userColl.find({shifts: {$elemMatch: {date: req.body.date}}}).toArray();
+        const shiftss = await shiftColl.find({date: req.body.date}).toArray()
+        console.log("FETCH USERS: " + users)
+        
+        const filteredUsers = users.filter((item) => 
+            item.shifts?.filter(f => 
+                f.date == req.body.date
+            )
+        )
+        
+        console.log("FILTERED USERS: " + JSON.stringify(filteredUsers))
+        
+        // Format the users from mongod to the desired user shift information
+        const userShifts: UserDayShift[] = filteredUsers.map(s => {
+            return {
+                firstname: s.firstname,
+                email: s.email,
+                shift: s.shifts     
+            }
+        })
+    
+        // console.log("\nUSERSHIFTS: " + userShifts)
+    
+        res.send(userShifts)
+    })
+
+    app.post('/api/getOneUser', async (req: RequestSession, res) => {
+        const args = req.body as Partial<authUser>
+
+        const user = await userColl.findOne({ _id: ObjectId(args.id) })
+
+        if (!user) {
+            return res.send({ success: false, errorMessage: 'Something went wrong retrieving your profile' })
+        }
+
+        const formattedProfile: EmployeeDisplay = {
+            username: user.username,
+            password: user.password,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            jobposition: user.jobposition,
+            phone: user.phone,
+            avatar: user.avatar,
+            birthday: user.birthday,
+            address: user.address,
+            createdDate: user.createdDate,
+        }
+        res.send(formattedProfile)
+    })
+
+    app.get('/api', async (req, res) => {
+        console.log('hello world')
+        res.send('hi')
     })
 
     Auth({ app, client, userColl })
-
     const port = process.env.NODE_ENV || 8080
 
     app.listen(port, () => console.log(`Listening on port ${port}!`))
