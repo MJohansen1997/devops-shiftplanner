@@ -5,8 +5,8 @@
     "license": "MIT",
     "scripts": {
         "start": "nodemon -e ts,json --exec ts-node ./src/server.ts",
-        "dev": "nodemon -x ts-node src/server.ts",
-        "prod": "node ./src/server.ts"
+        "dev": "set NODE_ENV=development&& nodemon -x ts-node src/server.ts",
+        "prod": "set NODE_ENV=production&& nodemon -e ts,json --exec ts-node ./src/server.ts"
     },
     "dependencies": {
         "@types/bcryptjs": "^2.4.2",
@@ -23,7 +23,9 @@
         "body-parser": "^1.19.0",
         "connect-mongo": "^4.6.0",
         "cors": "^2.8.5",
+        "dotenv": "^10.0.0",
         "email-validator": "^2.0.4",
+        "env-cmd": "^10.1.0",
         "express": "^4.17.1",
         "express-session": "^1.17.1",
         "lodash": "^4.17.20",
