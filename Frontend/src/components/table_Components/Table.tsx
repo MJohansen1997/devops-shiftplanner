@@ -1,9 +1,13 @@
 import {useTable, usePagination} from 'react-table'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { useHistory } from 'react-router'
 import { EmployeeDisplay } from '../../../../Backend/src/Types'
+import {data} from './Table_Component'
+
 import {Button, PageButton} from "./Table_Button.js";
 import { ChevronDoubleLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleRightIcon } from '@heroicons/react/solid'
+import Axios from "axios";
+
 
 
 export const EmployeeTable = () => {
@@ -45,10 +49,7 @@ export const EmployeeTable = () => {
         []
     )
 
-    let avatar = EmployeeDisplay.avatar
-    let firstname = EmployeeDisplay.firstname
-
-    const data = React.useMemo(
+    /*const data = React.useMemo(
         () => [
             {
                 image:"https://freesvg.org/img/abstract-user-flat-4.png",
@@ -95,7 +96,23 @@ export const EmployeeTable = () => {
             },
         ],
         []
-    )
+    )*/
+
+
+    const [data, setData] = useState<EmployeeDisplay[]>([])
+
+    const getAllUsers = async () => {
+        const result = (
+            await Axios.get('/api/getEmployees', { withCredentials: true })
+        ).data
+
+        setData(result)
+        console.log(result)
+    }
+
+    useEffect(() => {
+        getAllUsers()
+    }, [])
 
     const tableInstance = useTable({columns, data},usePagination)
 
@@ -133,8 +150,8 @@ export const EmployeeTable = () => {
                     )
                 )}
             </div>
-            <table class="rounded border border-black" {...getTableProps()}>
-                <thead class="bg-darkgrey">
+            <table className="rounded border border-black" {...getTableProps()}>
+                <thead className="bg-darkgrey">
                 {// Loop over the header rows
                     headerGroups.map(headerGroup => (
                         // Apply the header row props
@@ -142,7 +159,7 @@ export const EmployeeTable = () => {
                             {// Loop over the headers in each row
                                 headerGroup.headers.map(column => (
                                     // Apply the header cell props
-                                    <th class=" px-24 py-3 text-gray-500" {...column.getHeaderProps()}>
+                                    <th className=" px-24 py-3 text-gray-500" {...column.getHeaderProps()}>
                                         {// Render the header
                                             column.render('Header')}
                                     </th>
@@ -151,7 +168,7 @@ export const EmployeeTable = () => {
                     ))}
                 </thead>
                 {/* Apply the table body props */}
-                <tbody class="divide-y bg-lightgrey" {...getTableBodyProps()}>
+                <tbody className="divide-y bg-lightgrey" {...getTableBodyProps()}>
                 {// Loop over the table rows
                     // while using page, insted of rows
                     // it shows only the rows for the active page - the amount of rows is a page
