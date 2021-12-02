@@ -3,6 +3,7 @@ import cors from 'cors'
 import express from 'express'
 import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
+import { json } from 'stream/consumers'
 import { Auth, RequestSession } from './Auth'
 import { authUser, DbSettings, EmployeeDisplay, IFruitData, User, Shift, UserDayShift} from './Types'
 
@@ -73,26 +74,26 @@ export const Server = async () => {
         res.send('hellotherefriend')
     })
 
-    app.post('/api/login', async (req, res) => {
-        const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
+    // app.post('/api/login', async (req, res) => {
+    //     const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
 
-        if (!authUser) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
+    //     if (!authUser) {
+    //         return res.send({ success: false, errorMessage: 'Invalid password' })
+    //     }
 
-        if (!bcrypt.compareSync(req.body.password, authUser.password)) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
+    //     if (!bcrypt.compareSync(req.body.password, authUser.password)) {
+    //         return res.send({ success: false, errorMessage: 'Invalid password' })
+    //     }
 
-        //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
+    //     //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
 
-        const user = {
-            id: authUser._id.toHexString(),
-            role: authUser.role,
-        }
+    //     const user = {
+    //         id: authUser._id.toHexString(),
+    //         role: authUser.role,
+    //     }
 
-        return res.send({ success: true, data: user })
-    })
+    //     return res.send({ success: true, data: user })
+    // })
 
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
         // if (!req.session || !req.session.data) {
@@ -131,29 +132,50 @@ export const Server = async () => {
     app.post('/api/fetchUsersShift', async (req, res) => {
         console.log("PRINTING REQ BODY: " + req.body.date)
         // get a shift
-        const users = await userColl.find({shifts: {$elemMatch: {date: req.body.date}}}).toArray();
-        const shiftss = await shiftColl.find({date: req.body.date}).toArray()
-        console.log("FETCH USERS: " + users)
-
-        const filteredUsers = users.filter((item) =>
-            item.shifts?.filter(f =>
-                f.date == req.body.date
-            )
-        )
-
-        console.log("FILTERED USERS: " + JSON.stringify(filteredUsers))
-
-        // Format the users from mongod to the desired user shift information
-        const userShifts: UserDayShift[] = filteredUsers.map(s => {
-            return {
-                firstname: s.firstname,
-                email: s.email,
-                shift: s.shifts
+        // const shiftss = await shiftColl.find({date: req.body.date}).toArray()
+        const users = await userColl.find({shifts: {$elemMatch: {date: `${req.body.date}`}}}).toArray();
+        
+        
+        
+        const test = await userColl.aggregate([
+            {
+              $match: {shifts: {$elemMatch: {date: `${req.body.date}`}}}  
+            },
+            {
+                $project: {
+                    _id: 0,
+                    firstname : '$firstname',
+                    email: '$email',
+                    shifts: {
+                        $filter: {
+                            input: '$shifts',
+                            as: 'item',
+                            cond: { $eq: ['$$item.date', `${req.body.date}`] }
+                        }
+                    }
+                }
             }
-        })
-
-        // console.log("\nUSERSHIFTS: " + userShifts)
-
+        ]).toArray();
+        
+        
+        
+        
+        console.log("FETCH USERS: " + JSON.stringify(test))
+        
+        
+        // Format the users from mongod to the desired user shift information
+        const userShifts: UserDayShift[] = 
+            test.map(s => {
+                console.log(s)
+                return {
+                    firstname: s.firstname,
+                    email: s.email,
+                    shift: s.shifts
+                }
+            })
+    
+        console.log("\nUSERSHIFTS: " + JSON.stringify(userShifts))
+    
         res.send(userShifts)
     })
 
