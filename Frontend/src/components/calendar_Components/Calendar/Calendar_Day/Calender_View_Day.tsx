@@ -42,23 +42,23 @@ export const CalendarDay = () => {
     const renderShifts = () => {
         
         console.log("inside render shifts: " + JSON.stringify(shifts))
-        return shifts ? (
-            <>
-                {shifts.map(({firstname, email, shifts}) => {
-                    return(
-                        {shifts.map(({startTime, endTime}) => {
-                            return (           
-                                <div className={`flex rounded-lg ml-1 border-2 border-black col-start-${startTime} col-end-${endTime} p-3 bg-amber-200 text-black font-bold justify-center`} key={firstname}>
-                                    {firstname}
-                                    {email}
-                                </div>
-                            )
-                        })}
-                    )
-                })
-                }
-             </>
-             ) : (<div> Loading elements.. </div>)
+        // return shifts ? (
+        //     <>
+        //         {shifts.map(({firstname, email, shifts}) => {
+        //             return(
+        //                 {shifts.map(({startTime, endTime}) => {
+        //                     return (           
+        //                         <div className={`flex rounded-lg ml-1 border-2 border-black col-start-${startTime} col-end-${endTime} p-3 bg-amber-200 text-black font-bold justify-center`} key={firstname}>
+        //                             {firstname}
+        //                             {email}
+        //                         </div>
+        //                     )
+        //                 })}
+        //             )
+        //         })
+        //         }
+        //      </>
+        //      ) : (<div> Loading elements.. </div>)
     }
 
     const renderHeader = () => {
