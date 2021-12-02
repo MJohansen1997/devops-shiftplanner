@@ -164,14 +164,15 @@ export const Server = async () => {
         
         
         // Format the users from mongod to the desired user shift information
-        const userShifts: UserDayShift[] = test.map(s => {
-            console.log(s)
-            return {
-                firstname: s.firstname,
-                email: s.email,
-                shifts: s.shifts     
-            }
-        })
+        const userShifts: UserDayShift[] = 
+            test.map(s => {
+                console.log(s)
+                return {
+                    firstname: s.firstname,
+                    email: s.email,
+                    shift: s.shifts
+                }
+            })
     
         console.log("\nUSERSHIFTS: " + JSON.stringify(userShifts))
     
