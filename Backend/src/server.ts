@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs'
-import bodyParser from 'body-parser'
 import cors from 'cors'
 import express from 'express'
 import { connect, ObjectId } from 'mongodb'
@@ -7,6 +6,7 @@ import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
 import { authUser, DbSettings, EmployeeDisplay, IFruitData, User } from './Types'
 
+require('dotenv').config()
 export const Server = async () => {
     const rootDir = 'public'
 
@@ -18,6 +18,14 @@ export const Server = async () => {
     })
 
     const app = express()
+
+    if (process.env.NODE_ENV === 'production') {
+        console.log('Whats popping prod')
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+        console.log('Whats popping develop')
+    }
 
     app.disable('x-powered-by')
 
@@ -34,17 +42,19 @@ export const Server = async () => {
     app.use(express.json())
     //app.use(bodyParser.json())
 
-    //if (process.env.NODE_ENV === 'production') {
-    //app.use(express.static(rootDir))
-    // } else {
-    app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
-    // }
+    const portie = parseInt(process.env.PORT as string)
+
+    if (process.env.NODE_ENV === 'production') {
+        app.use(cors({ credentials: true, origin: `${process.env.CORSVALUE_PROD}` }))
+    } else {
+        app.use(cors({ credentials: true, origin: `${process.env.CORSVALUE_DEV}` }))
+    }
 
     const dbSettings: DbSettings = {
-        username: 'admin',
-        password: '8m9SqwY234',
-        host: '130.225.170.205',
-        port: '27017',
+        username: `${process.env.USERNAMEDB}`,
+        password: `${process.env.PASSWORD}`,
+        host: `${process.env.HOST}`,
+        port: `${process.env.PORT}`,
     }
 
     const client = await connect(
@@ -59,17 +69,11 @@ export const Server = async () => {
     const userColl = client.db('shiftplanner').collection<User>('user')
 
     app.post('/api/random', async (req: RequestSession, res) => {
-        console.log('hellotherefriend')
         res.send('hellotherefriend')
     })
 
     app.post('/api/login', async (req, res) => {
-        console.log(req.body)
         const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
-
-        console.log(authUser)
-
-        console.log(req.body.password)
 
         if (!authUser) {
             return res.send({ success: false, errorMessage: 'Invalid password' })
@@ -164,7 +168,7 @@ export const Server = async () => {
     })
 
     Auth({ app, client, userColl })
-    const port = process.env.NODE_ENV || 8080
+    const port = 8080
 
     app.listen(port, () => console.log(`Listening on port ${port}!`))
 }
