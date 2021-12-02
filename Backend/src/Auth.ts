@@ -1,6 +1,9 @@
 import bcrypt from 'bcryptjs'
+import MongoStore from 'connect-mongo'
 import emailValidator from 'email-validator'
 import core from 'express-serve-static-core'
+import session from 'express-session'
+import moment from 'moment'
 import { Collection, MongoClient } from 'mongodb'
 import { EmployeeDisplay, User } from './Types'
 
@@ -39,25 +42,24 @@ export const Auth = ({
 
     app.set('trust proxy', 1)
 
-    // app.use(
-    //     session({
-    //         secret: 'SomeRandomShit',
-    //         resave: true,
-    //         saveUninitialized: false,
-    //         name: 'shiftplanner',
-    //         store: MongoStore.create({ client, dbName: 'shiftplanner' }),
-    //         ...(process.env.NODE_ENV !== 'development' && { proxy: true }),
-    //         cookie: {
-    //             httpOnly: false,
-    //             sameSite: 'lax',
-    //             ...(process.env.NODE_ENV !== 'development' && {
-    //                 domain: 'devops.diplomportal.dk',
-    //                 sameSite: 'none',
-    //                 secure: true,
-    //             }),
-    //         },
-    //     })
-    // )
+    app.use(
+        session({
+            secret: 'SomeRandomShit',
+            resave: true,
+            saveUninitialized: false,
+            name: 'shiftplanner',
+            store: MongoStore.create({ client, dbName: 'shiftplanner' }),
+            ...(process.env.NODE_ENV !== 'development' && { proxy: true }),
+            cookie: {
+                httpOnly: false,
+                sameSite: 'lax',
+                ...(process.env.NODE_ENV !== 'development' && {
+                    sameSite: 'none',
+                    secure: true,
+                }),
+            },
+        })
+    )
 
     type IRegisterProps = {
         username: string
@@ -171,9 +173,21 @@ export const Auth = ({
         res.send({ success: true })
     })
 
-    
-    app.post('/api/login', async (req, res) => {
-        console.log(req.body)
+    app.post('/api/checkCookie', async (req: RequestSession, res) => {
+        if (req.session && req.session.data) {
+            return res.send({ success: true, data: req.session!.data.user })
+        } else {
+            console.log('Something is wrong')
+        }
+    })
+
+    app.post('/api/login', async (req: RequestSession, res) => {
+        if (req.session && req.session.data) {
+            console.log('Now we in here')
+            return res.send({ success: true, data: req.session!.data.user })
+        }
+
+        console.log('We do be in here')
         const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
 
         console.log(authUser)
@@ -188,16 +202,20 @@ export const Auth = ({
             return res.send({ success: false, errorMessage: 'Invalid password' })
         }
 
-        //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
+        req.session!.cookie.expires = moment().add(6, 'hour').toDate()
 
-        const user = {
-            id: authUser._id.toHexString(),
-            role: authUser.role,
+        req.session!.data = {
+            user: {
+                id: authUser._id.toHexString(),
+                role: authUser.role,
+            },
         }
 
-        return res.send({ success: true, data: user })
+        console.log(req.session!.data)
+        console.log(req.session!.data.user)
+        return res.send({ success: true, data: req.session!.data.user })
     })
-    
+
     // app.post('/api/logout', async (req: Request, res) => {
     //     if (!req.session || !req.session.data) {
     //         return res.send({ success: false, errorMessage: 'Not logged in' })
