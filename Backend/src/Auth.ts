@@ -54,7 +54,7 @@ export const Auth = ({
                 httpOnly: false,
                 sameSite: 'lax',
                 ...(process.env.NODE_ENV !== 'development' && {
-                    domain: 'shiftplanner.devops.diplomportal.dk',
+                    domain: '.devops.diplomportal.dk',
                     sameSite: 'none',
                     secure: true,
                 }),
@@ -77,9 +77,9 @@ export const Auth = ({
     })
 
     app.get('/api/getEmployeesCheck', async (req: RequestSession, res) => {
-        // if (!req.session || !req.session.data) {
-        //     return res.send({ success: false, errorMessage: 'Not logged in' })
-        // }
+        if (!req.session || !req.session.data) {
+            return res.send({ success: false, errorMessage: 'Not logged in' })
+        }
 
         const users = await userColl.find({}).toArray()
 

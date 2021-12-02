@@ -1,11 +1,9 @@
-import bcrypt from 'bcryptjs'
 import cors from 'cors'
 import express from 'express'
 import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
-import { json } from 'stream/consumers'
 import { Auth, RequestSession } from './Auth'
-import { authUser, DbSettings, EmployeeDisplay, IFruitData, User, Shift, UserDayShift} from './Types'
+import { authUser, DbSettings, EmployeeDisplay, IFruitData, Shift, User, UserDayShift } from './Types'
 
 require('dotenv').config()
 export const Server = async () => {
@@ -130,52 +128,47 @@ export const Server = async () => {
     // Fetching all users for a specific date to use for the frontend calendar day view.
     // REQ = DATE
     app.post('/api/fetchUsersShift', async (req, res) => {
-        console.log("PRINTING REQ BODY: " + req.body.date)
+        console.log('PRINTING REQ BODY: ' + req.body.date)
         // get a shift
         // const shiftss = await shiftColl.find({date: req.body.date}).toArray()
-        const users = await userColl.find({shifts: {$elemMatch: {date: `${req.body.date}`}}}).toArray();
-        
-        
-        
-        const test = await userColl.aggregate([
-            {
-              $match: {shifts: {$elemMatch: {date: `${req.body.date}`}}}  
-            },
-            {
-                $project: {
-                    _id: 0,
-                    firstname : '$firstname',
-                    email: '$email',
-                    shifts: {
-                        $filter: {
-                            input: '$shifts',
-                            as: 'item',
-                            cond: { $eq: ['$$item.date', `${req.body.date}`] }
-                        }
-                    }
-                }
-            }
-        ]).toArray();
-        
-        
-        
-        
-        console.log("FETCH USERS: " + JSON.stringify(test))
-        
-        
+        const users = await userColl.find({ shifts: { $elemMatch: { date: `${req.body.date}` } } }).toArray()
+
+        const test = await userColl
+            .aggregate([
+                {
+                    $match: { shifts: { $elemMatch: { date: `${req.body.date}` } } },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        firstname: '$firstname',
+                        email: '$email',
+                        shifts: {
+                            $filter: {
+                                input: '$shifts',
+                                as: 'item',
+                                cond: { $eq: ['$$item.date', `${req.body.date}`] },
+                            },
+                        },
+                    },
+                },
+            ])
+            .toArray()
+
+        console.log('FETCH USERS: ' + JSON.stringify(test))
+
         // Format the users from mongod to the desired user shift information
-        const userShifts: UserDayShift[] = 
-            test.map(s => {
-                console.log(s)
-                return {
-                    firstname: s.firstname,
-                    email: s.email,
-                    shift: s.shifts
-                }
-            })
-    
-        console.log("\nUSERSHIFTS: " + JSON.stringify(userShifts))
-    
+        const userShifts: UserDayShift[] = test.map(s => {
+            console.log(s)
+            return {
+                firstname: s.firstname,
+                email: s.email,
+                shift: s.shifts,
+            }
+        })
+
+        console.log('\nUSERSHIFTS: ' + JSON.stringify(userShifts))
+
         res.send(userShifts)
     })
 
@@ -190,7 +183,6 @@ export const Server = async () => {
 
         const formattedProfile: EmployeeDisplay = {
             username: user.username,
-            password: user.password,
             firstname: user.firstname,
             lastname: user.lastname,
             email: user.email,
@@ -206,9 +198,9 @@ export const Server = async () => {
 
     app.post('/api/getUsersForMonth', async (req, res) => {
         //const users = await userColl.find({"shifts.date": {$regex : "2021-11"}}).toArray()
-        console.log(req.body.date);
+        console.log(req.body.date)
         //const users = await userColl.find({"shifts.date": {$regex : req.body.date}}).toArray()
-        const users = await userColl.find({"shifts.date": {$regex : req.body.date}}).toArray()
+        const users = await userColl.find({ 'shifts.date': { $regex: req.body.date } }).toArray()
         res.send(users)
     })
 

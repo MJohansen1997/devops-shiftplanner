@@ -1,7 +1,7 @@
 import Axios from 'axios'
+import { EmployeeDisplay } from 'devops-shiftplanner/Backend/src/Types'
 import { useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { EmployeeDisplay } from 'devops-shiftplanner/Backend/src/Types'
 import { UserContext } from './Context/UserContext'
 
 export const MyProfile = () => {
@@ -10,11 +10,13 @@ export const MyProfile = () => {
     const history = useHistory()
 
     const getOneUser = async () => {
+        console.log(user.id)
         const result = (
             await Axios.post<EmployeeDisplay>(`${process.env.REACT_APP_URL}/api/getOneUser`, user, {
                 withCredentials: true,
             })
         ).data
+        console.log(result)
 
         setData(result)
         console.log(result)
@@ -53,8 +55,6 @@ export const MyProfile = () => {
                         <h3 className=" text-3xl text-black">{data.role}</h3>
                         <p>Oprettet</p>
                         <h3 className=" text-3xl text-black">{data.createdDate}</h3>
-                        <p>Kodeord</p>
-                        <h3 className=" text-3xl text-black">{data.password}</h3>
 
                         <button className="mt-5 px-4 py-1.5 rounded-lg border-2 border-lightPrimary bg-lightSecondary font-bold text-black text-2xl hover:bg-opacity-80">
                             Redigér
