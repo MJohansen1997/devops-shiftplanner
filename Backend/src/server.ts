@@ -183,10 +183,7 @@ export const Server = async () => {
     })
 
     app.post('/api/getUsersForMonth', async (req, res) => {
-        //const users = await userColl.find({"shifts.date": {$regex : "2021-11"}}).toArray()
-        console.log(req.body.date);
-        //const users = await userColl.find({"shifts.date": {$regex : req.body.date}}).toArray()
-        const users = await userColl.find({"shifts.date": {$regex : req.body.date}}).toArray()
+        const users = await userColl.find({ $or : [{"shifts.date": {$regex : req.body.date}}, {"shifts.date": {$regex : req.body.datep1}}, {"shifts.date": {$regex : req.body.datem1}}]}).toArray()
         res.send(users)
     })
 
