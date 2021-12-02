@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs'
-import bodyParser from 'body-parser'
 import cors from 'cors'
 import express from 'express'
 import { connect, ObjectId } from 'mongodb'
@@ -7,6 +6,7 @@ import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
 import { authUser, DbSettings, EmployeeDisplay, IFruitData, User, Shift, UserDayShift} from './Types'
 
+require('dotenv').config()
 export const Server = async () => {
     const rootDir = 'public'
 
@@ -18,6 +18,14 @@ export const Server = async () => {
     })
 
     const app = express()
+
+    if (process.env.NODE_ENV === 'production') {
+        console.log('Whats popping prod')
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+        console.log('Whats popping develop')
+    }
 
     app.disable('x-powered-by')
 
@@ -34,17 +42,19 @@ export const Server = async () => {
     app.use(express.json())
     //app.use(bodyParser.json())
 
-    //if (process.env.NODE_ENV === 'production') {
-    //app.use(express.static(rootDir))
-    // } else {
-    app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
-    // }
+    const portie = parseInt(process.env.PORT as string)
+
+    if (process.env.NODE_ENV === 'production') {
+        app.use(cors({ credentials: true, origin: `${process.env.CORSVALUE_PROD}` }))
+    } else {
+        app.use(cors({ credentials: true, origin: `${process.env.CORSVALUE_DEV}` }))
+    }
 
     const dbSettings: DbSettings = {
-        username: 'admin',
-        password: '8m9SqwY234',
-        host: '130.225.170.205',
-        port: '27017',
+        username: `${process.env.USERNAMEDB}`,
+        password: `${process.env.PASSWORD}`,
+        host: `${process.env.HOST}`,
+        port: `${process.env.PORT}`,
     }
 
     const client = await connect(
@@ -60,11 +70,29 @@ export const Server = async () => {
     const shiftColl = client.db('shiftplanner').collection<Shift>('shifts')
 
     app.post('/api/random', async (req: RequestSession, res) => {
-        console.log('hellotherefriend')
         res.send('hellotherefriend')
     })
 
-    
+    app.post('/api/login', async (req, res) => {
+        const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
+
+        if (!authUser) {
+            return res.send({ success: false, errorMessage: 'Invalid password' })
+        }
+
+        if (!bcrypt.compareSync(req.body.password, authUser.password)) {
+            return res.send({ success: false, errorMessage: 'Invalid password' })
+        }
+
+        //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
+
+        const user = {
+            id: authUser._id.toHexString(),
+            role: authUser.role,
+        }
+
+        return res.send({ success: true, data: user })
+    })
 
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
         // if (!req.session || !req.session.data) {
@@ -106,26 +134,26 @@ export const Server = async () => {
         const users = await userColl.find({shifts: {$elemMatch: {date: req.body.date}}}).toArray();
         const shiftss = await shiftColl.find({date: req.body.date}).toArray()
         console.log("FETCH USERS: " + users)
-        
-        const filteredUsers = users.filter((item) => 
-            item.shifts?.filter(f => 
+
+        const filteredUsers = users.filter((item) =>
+            item.shifts?.filter(f =>
                 f.date == req.body.date
             )
         )
-        
+
         console.log("FILTERED USERS: " + JSON.stringify(filteredUsers))
-        
+
         // Format the users from mongod to the desired user shift information
         const userShifts: UserDayShift[] = filteredUsers.map(s => {
             return {
                 firstname: s.firstname,
                 email: s.email,
-                shift: s.shifts     
+                shift: s.shifts
             }
         })
-    
+
         // console.log("\nUSERSHIFTS: " + userShifts)
-    
+
         res.send(userShifts)
     })
 
@@ -154,13 +182,19 @@ export const Server = async () => {
         res.send(formattedProfile)
     })
 
+    app.post('/api/getUsersForMonth', async (req, res) => {
+        const users = await userColl.find({"shifts.date": {$regex : "2021-11"}}).toArray()
+        // const users = await userColl.find({"shifts.date": {$regex : req}}).toArray()
+        res.send(users)
+    })
+
     app.get('/api', async (req, res) => {
         console.log('hello world')
         res.send('hi')
     })
 
     Auth({ app, client, userColl })
-    const port = process.env.NODE_ENV || 8080
+    const port = 8080
 
     app.listen(port, () => console.log(`Listening on port ${port}!`))
 }
