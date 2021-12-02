@@ -133,9 +133,6 @@ export const Server = async () => {
         console.log("PRINTING REQ BODY: " + req.body.date)
         // get a shift
         // const shiftss = await shiftColl.find({date: req.body.date}).toArray()
-        const users = await userColl.find({shifts: {$elemMatch: {date: `${req.body.date}`}}}).toArray();
-        
-        
         
         const test = await userColl.aggregate([
             {

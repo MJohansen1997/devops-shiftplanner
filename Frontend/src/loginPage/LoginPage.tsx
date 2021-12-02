@@ -3,7 +3,7 @@ import { authUser } from 'devops-shiftplanner/Backend/src/Types'
 import { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 import { RegisterForm } from '../components/RegisterForm/RegisterView'
-import { UserContext } from '../Context/UserContext'
+import { UserContext, authContextValue } from '../Context/UserContext'
 
 export const LoginPage = () => {
     const history = useHistory()

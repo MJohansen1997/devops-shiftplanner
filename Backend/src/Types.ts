@@ -75,8 +75,8 @@ export type Shift = {
     _id: ObjectId
     emp_id: ObjectId
     date: Date
-    startTime: Date
-    endTime: Date
+    startTime: number
+    endTime: number
     role?: string
     sickLeave?: boolean
     description?: string
