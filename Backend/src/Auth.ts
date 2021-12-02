@@ -54,6 +54,7 @@ export const Auth = ({
                 httpOnly: false,
                 sameSite: 'lax',
                 ...(process.env.NODE_ENV !== 'development' && {
+                    domain: 'shiftplanner.devops.diplomportal.dk',
                     sameSite: 'none',
                     secure: true,
                 }),
