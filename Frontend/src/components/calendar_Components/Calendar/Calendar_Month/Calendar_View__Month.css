@@ -98,6 +98,7 @@ body {
     height: 10em;
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
+    z-index: auto;
     overflow: hidden;
     cursor: pointer;
     background: var(--neutral-color);

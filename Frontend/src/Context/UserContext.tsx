@@ -2,7 +2,7 @@ import Axios from 'axios'
 import { authUser } from 'devops-shiftplanner/Backend/src/Types'
 import React, { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 
-type authContextValue = {
+export type authContextValue = {
     user: authUser
     setUser: Dispatch<SetStateAction<authUser>>
 }

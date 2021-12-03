@@ -45,7 +45,7 @@ export const Header = props => {
                 </button>
             </div>
             {expanded ? (
-                <div className="absolute grid grid-cols-1 top-20 right-3 bg-lightSecondary dark:bg-primary rounded-sm border-l-2 border-r-2 border-b-2 text-white transition duration-500 ease-in-out">
+                <div className="z-10 absolute grid grid-cols-1 top-20 right-3 bg-lightSecondary dark:bg-primary rounded-sm border-l-2 border-r-2 border-b-2 text-white transition duration-500 ease-in-out">
                     <div className="p-4 hover:bg-lightPrimary dark:hover:bg-secondary">
                         <button onClick={() => history.push(`/myprofile`)}>
                             <PersonIcon />
@@ -58,7 +58,7 @@ export const Header = props => {
                             Indstillinger
                         </button>
                     </div>
-                    <div className="p-2.5 hover:bg-lightPrimary dark:hover:bg-secondary">
+                    <div className="p-2.5 pl-4 hover:bg-lightPrimary dark:hover:bg-secondary">
                         <DarkModeIcon />
                         Dark mode <Switch className="p-0" onClick={() => applyTheme()} />
                     </div>

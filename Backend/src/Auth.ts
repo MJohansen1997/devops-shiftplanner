@@ -4,14 +4,21 @@ import emailValidator from 'email-validator'
 import core from 'express-serve-static-core'
 import session from 'express-session'
 import moment from 'moment'
-import { Collection, MongoClient } from 'mongodb'
-import { EmployeeDisplay, User } from './Types'
+import { Collection, MongoClient} from 'mongodb'
+import {EmployeeDisplay, Shift, User} from './Types'
 
 export type Request<TSession = any> = core.Request & {
     session?: Express.Request['session'] & {
         data?: TSession
     }
 }
+
+var ID = function () {
+    // Math.random should be unique because of its seeding algorithm.
+    // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+    // after the decimal.
+    return '_' + Math.random().toString(36).substr(2, 9);
+};
 
 export type RequestSession = Request<{ user: { id: string; role: boolean } }>
 
@@ -77,9 +84,9 @@ export const Auth = ({
     })
 
     app.get('/api/getEmployeesCheck', async (req: RequestSession, res) => {
-        // if (!req.session || !req.session.data) {
-        //     return res.send({ success: false, errorMessage: 'Not logged in' })
-        // }
+        if (!req.session || !req.session.data) {
+            return res.send({ success: false, errorMessage: 'Not logged in' })
+        }
 
         const users = await userColl.find({}).toArray()
 
@@ -98,23 +105,62 @@ export const Auth = ({
         res.send(formattedEmployees)
     })
 
+    app.post('/api/registerFacebook', async (req: RequestSession, res) => {
+        console.log("facebook login!")
+        console.log(req.body.id)
+        console.log(ID())
+        let user = await userColl.findOne({facebook: req.body.id})
+        console.log(user)
+        if (!user) {
+            await userColl.insertOne({
+                username: ID(),
+                password: ID(),
+                facebook: req.body.id,
+                email: req.body.email,
+                firstname: req.body.first_name,
+                lastname: req.body.last_name,
+                createdDate: new Date(),
+                role: false,
+                jobposition: 'Employee',
+                birthday: new Date(req.body.birthday),
+                cpr: '',
+                phone: '',
+                shifts: [],
+                newsFeed: [],
+            })
+            user = await userColl.findOne({facebook: req.body.id})
+        }
+        if (user == null)
+            return res.send({success: false, errorMessage: "fuck dig din lille luder"})
+        req.session!.cookie.expires = moment().add(6, 'hour').toDate()
+        req.session!.data = {
+            user: {
+                id: user._id.toHexString(),
+                role: user.role,
+            },
+        }
+        console.log(req.session!.data)
+        console.log(req.session!.data.user)
+        return res.send({ success: true, data: req.session!.data.user })
+    })
+
     app.post('/api/register', async (req: RequestSession, res) => {
         const args = req.body as Partial<IRegisterProps>
 
         if (req.session && req.session.data) {
-            return res.send({ success: false, errorMessage: 'Already logged in' })
+            return res.send({success: false, errorMessage: 'Already logged in'})
         }
 
         if (!args.username || args.username.length < 3) {
-            return res.send({ success: false, errorMessage: 'Username is too short' })
+            return res.send({success: false, errorMessage: 'Username is too short'})
         }
 
         if (args.username.length > 20) {
-            return res.send({ success: false, errorMessage: 'Username is too long' })
+            return res.send({success: false, errorMessage: 'Username is too long'})
         }
 
         if (args.username.match(/[^-A-Za-z0-9._]/u)) {
-            return res.send({ success: false, errorMessage: 'Username contains invalid characters' })
+            return res.send({success: false, errorMessage: 'Username contains invalid characters'})
         }
 
         const v = passwordValidation(args)
@@ -124,29 +170,29 @@ export const Auth = ({
         }
 
         if (!args.email || args.email.length < 4) {
-            return res.send({ success: false, errorMessage: 'Email is too short' })
+            return res.send({success: false, errorMessage: 'Email is too short'})
         }
 
         //Suprise motherfucker
         if (!args.email || args.email.length > 64) {
-            return res.send({ success: false, errorMessage: 'Email is too long' })
+            return res.send({success: false, errorMessage: 'Email is too long'})
         }
 
         // If you read this you gay
         if (!emailValidator.validate(args.email)) {
-            return res.send({ success: false, errorMessage: 'Email has an invalid format' })
+            return res.send({success: false, errorMessage: 'Email has an invalid format'})
         }
 
-        if (await userColl.findOne({ username: new RegExp(args.username, 'i') })) {
-            return res.send({ success: false, errorMessage: 'Username is already taken' })
+        if (await userColl.findOne({username: new RegExp(args.username, 'i')})) {
+            return res.send({success: false, errorMessage: 'Username is already taken'})
         }
 
-        if (await userColl.findOne({ email: args.email })) {
-            return res.send({ success: false, errorMessage: 'Email is already taken' })
+        if (await userColl.findOne({email: args.email})) {
+            return res.send({success: false, errorMessage: 'Email is already taken'})
         }
 
         if (!args.password) {
-            return res.send({ success: false, errorMessage: 'No password supplied' })
+            return res.send({success: false, errorMessage: 'No password supplied'})
         }
 
         const pw = await bcrypt.hash(args.password, 10)

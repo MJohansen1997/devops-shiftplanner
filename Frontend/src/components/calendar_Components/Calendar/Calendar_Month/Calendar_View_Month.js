@@ -13,10 +13,13 @@ import {
     startOfWeek,
 } from 'date-fns'
 import React, { useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import './Calendar_View__Month.css'
 import { ShiftComponent } from './Calender_Shift_Component'
 import Axios from 'axios'
+import {RegisterShiftForm} from "../../../RegisterForm/RegisterShift.tsx";
+import {DeleteShiftForm} from "../../../RegisterForm/DeleteShift.tsx";
+
 
 export const Calendar = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -45,9 +48,6 @@ export const Calendar = () => {
         });
     }, [currentMonth])
 
-    const handleRoute = ({ onClick }) => {
-        history.push(`/calenderDay`)
-    }
 
     const nextMonth = () => {
         setCurrentMonth(addMonths(currentMonth, 1))
@@ -57,10 +57,28 @@ export const Calendar = () => {
         setCurrentMonth(addMonths(currentMonth, -1))
     }
 
+    const [isOpen, setIsOpen] = useState(false)
+    const togglePop = () => {
+        setIsOpen(!isOpen)
+    }
+
     const renderHeader = () => {
         const dateFormat = 'LLLL yyyy'
         return (
             <div className="header">
+                <div className="grid-cols-2 divide-x-2">
+                    <button className="text-black " onClick={togglePop}>
+                        {' '}
+                        Opret vagt{' '}
+                    </button>
+                    {isOpen && <RegisterShiftForm popValues={{ isOpen, setIsOpen }} />}
+                    {/*<button className="text-black " onClick={togglePop}>*/}
+                    {/*    {' '}*/}
+                    {/*    Slet vagt{' '}*/}
+                    {/*</button>*/}
+                    {/*{isOpen && <DeleteShiftForm popValues={{ isOpen, setIsOpen }} />}*/}
+                </div>
+
                 <div className="icon cursor-pointer ml-5" onClick={prevMonth}>
                     {' '}
                     chevron_left{' '}
@@ -121,27 +139,28 @@ export const Calendar = () => {
                     <div
                         className={`col cell ${!isSameMonth(day, monthStart) ? 'disabled' : ''}`}
                         key={day}
-                        onClick={() => history.push('/calendarDay')}
+                        // onClick={() => history.push('/calendarDay')}
                     >
                         <div className="number font-bold float-right pr-3 pt-3 text-xs ">{formattedDate}</div>
-                        <div className="clear-right overflow-y-auto h-32 text-base disable-scrollbars">
-                            {workingUsers.map(({ firstname, shifts }) =>
-                                <ul>
-                                    {shifts.map(({ date, startTime, endTime }) =>
-                                    // Link for routing to day page
-                                    isSameDay(day, parseISO(date)) ? (
-                                        <li className={'float-left'}>
-                                            <Link to="/calendarDay">
-                                                <ShiftComponent name={firstname} timeStart={startTime} timeEnd={endTime} />
-                                            </Link>{' '}
-                                        </li>
-                                    ) : (
-                                        <li className='false'/>
-                                    )
+                        <Link to={`/calendarDay/${format(day, 'yyyy-MM-dd')}`}>
+                            <div className="clear-right overflow-y-auto h-32 text-base disable-scrollbars">
+                                {workingUsers.map(({ firstname, shifts }) =>
+                                    <ul>
+                                        {shifts.map(({ date, startTime, endTime }) =>
+                                        // Link for routing to day page
+                                        isSameDay(day, parseISO(date)) ? (
+                                            <li className={'float-left'}>
+                                                    <ShiftComponent name={firstname} timeStart={startTime} timeEnd={endTime} />
+                                                {' '}
+                                            </li>
+                                        ) : (
+                                            <li className='false'/>
+                                        )
+                                    )}
+                                    </ul>
                                 )}
-                                </ul>
-                            )}
-                        </div>
+                            </div>
+                        </Link>
                     </div>
                 )
                 day = addDays(day, 1)

@@ -106,6 +106,8 @@ export const Server = async () => {
 
         const users = await userColl.find({}).toArray()
 
+        console.log("printing \n"+JSON.stringify(users))
+
         const formattedEmployees: EmployeeDisplay[] = users.map(u => {
             return {
                 firstname: u.firstname,
@@ -189,7 +191,6 @@ export const Server = async () => {
 
         const formattedProfile: EmployeeDisplay = {
             username: user.username,
-            password: user.password,
             firstname: user.firstname,
             lastname: user.lastname,
             email: user.email,
@@ -204,11 +205,30 @@ export const Server = async () => {
     })
 
     app.post('/api/getUsersForMonth', async (req, res) => {
-        //const users = await userColl.find({"shifts.date": {$regex : "2021-11"}}).toArray()
-        console.log(req.body.date)
-        //const users = await userColl.find({"shifts.date": {$regex : req.body.date}}).toArray()
-        const users = await userColl.find({ 'shifts.date': { $regex: req.body.date } }).toArray()
+        const users = await userColl.find({ $or : [{"shifts.date": {$regex : req.body.date}}, {"shifts.date": {$regex : req.body.datep1}}, {"shifts.date": {$regex : req.body.datem1}}]}).toArray()
         res.send(users)
+    })
+
+
+    app.post('/api/registerShift', async (req, res) => {
+
+        console.log(req.body)
+
+        const shifts: IShift = {
+            username: req.body.username,
+            date: req.body.date,
+            startTime: req.body.startTime,
+            endTime: req.body.endTime
+        }
+
+        await userColl.updateOne({username: req.body.username},
+            {  $push: { shifts: {
+                _id: new ObjectId(),
+                date: req.body.date,
+                startTime: req.body.startTime,
+                endTime: req.body.endTime } }})
+
+        res.send({ success: shifts })
     })
 
     app.get('/api', async (req, res) => {

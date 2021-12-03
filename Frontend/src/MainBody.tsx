@@ -74,7 +74,7 @@ export const MainBody = () => {
                                 />
                                 <PrivateRoute
                                     exact
-                                    path="/calendarDay"
+                                    path="/calendarDay/:date"
                                     auth={() => user.loggedOn}
                                     renderNoAuth={noAuth}
                                     render={() => <CalendarDay />}
