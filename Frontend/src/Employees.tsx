@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import { UserContext } from './Context/UserContext'
 
 export const Employees = () => {
-    const { user, setUser } = useContext(UserContext)
+    // const { user, setUser } = useContext(UserContext)
     const [data, setData] = useState<EmployeeDisplay[]>([])
     const history = useHistory()
 
@@ -31,7 +31,7 @@ export const Employees = () => {
         console.log(result)
     }
 
-    const getAvatar = (image: Buffer) => {
+    const getAvatar = (image: Buffer | undefined) => {
         if (typeof image === 'undefined') {
             return (
                 <img className="object-scale-down h-12 w-full" src="https://freesvg.org/img/abstract-user-flat-4.png" />

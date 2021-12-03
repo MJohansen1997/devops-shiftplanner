@@ -3,7 +3,7 @@ import { authUser } from 'devops-shiftplanner/Backend/src/Types'
 import { useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import { RegisterForm } from '../components/RegisterForm/RegisterView'
-import { UserContext } from '../Context/UserContext'
+import { UserContext, authContextValue } from '../Context/UserContext'
 
 export const LoginPage = () => {
     const history = useHistory()
@@ -16,7 +16,6 @@ export const LoginPage = () => {
     })
 
     const doLogin = async () => {
-        console.log(authentication)
         const result = (
             await Axios.post<
                 { success: true; data: { id: string; role: boolean } } | { success: false; errorMessage: string }
@@ -100,7 +99,7 @@ export const LoginPage = () => {
                     <div className="mb-3">
                         <button
                             className="flex rounded-lg bg-googleColor text-black pr-2 py-2 m-auto w-52 hover:bg-googleHover hover:text-white"
-                            onClick={() => doRandomStuff()}
+                            
                         >
                             <img
                                 className="rounded-full object-scale-down h-6 w-10"
