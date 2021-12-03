@@ -100,6 +100,8 @@ export const Server = async () => {
 
         const users = await userColl.find({}).toArray()
 
+        console.log("printing \n"+JSON.stringify(users))
+
         const formattedEmployees: EmployeeDisplay[] = users.map(u => {
             return {
                 firstname: u.firstname,
