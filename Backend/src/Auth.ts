@@ -55,6 +55,7 @@ export const Auth = ({
                 sameSite: 'lax',
                 ...(process.env.NODE_ENV !== 'development' && {
                     domain: '.devops.diplomportal.dk',
+                    httpOnly: true,
                     sameSite: 'none',
                     secure: true,
                 }),
