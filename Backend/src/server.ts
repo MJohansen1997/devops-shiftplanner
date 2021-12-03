@@ -44,7 +44,7 @@ export const Server = async () => {
     const portie = parseInt(process.env.PORT as string)
 
     if (process.env.NODE_ENV === 'production') {
-        app.use(cors({ credentials: true, origin: `${process.env.CORSVALUE_PROD}`, allowedHeaders: 'accept' }))
+        app.use(cors({ credentials: true, origin: `https://shiftplanner.devops.diplomportal.dk` }))
     } else {
         app.use(cors({ credentials: true, origin: `${process.env.CORSVALUE_DEV}` }))
     }
