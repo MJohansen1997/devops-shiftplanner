@@ -21,14 +21,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: ls
-      - name: change directory
-        working-directory: ./Frontend
-      - run: ls
       - name: Install dependencies
+        working-directory: ./Frontend
         run: yarn install
       - name: build frontend
+        working-directory: ./Frontend
         run: yarn run build
       - name: run test
+        working-directory: ./Frontend
         run: yarn run test --watchAll
   
   build-and-deploy-back:
