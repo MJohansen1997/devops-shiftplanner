@@ -49,11 +49,11 @@ export const Auth = ({
             saveUninitialized: false,
             name: 'shiftplanner',
             store: MongoStore.create({ client, dbName: 'shiftplanner' }),
-            ...(process.env.NODE_ENV !== 'development' && { proxy: true }),
+            ...(process.env.NODE_ENV === 'production' && { proxy: true }),
             cookie: {
                 httpOnly: false,
                 sameSite: 'lax',
-                ...(process.env.NODE_ENV !== 'development' && {
+                ...(process.env.NODE_ENV === 'production' && {
                     domain: '.devops.diplomportal.dk',
                     sameSite: 'none',
                     secure: true,
