@@ -48,7 +48,8 @@
         "build": "craco build",
         "start:prod": "env-cmd -f .env.production craco start",
         "test": "craco test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
     },
     "eslintConfig": {
         "extends": [
