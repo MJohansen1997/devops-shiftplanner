@@ -1,19 +1,25 @@
 import Axios from 'axios'
 import { addDays, format } from 'date-fns'
 import { UserDayShift } from '../../../../../../Backend/src/Types'
-import React, { useEffect, useState } from 'react'
-export const CalendarDay = props => {
+import { useParams } from "react-router-dom";
+import React, { useEffect, useState} from 'react'
+
+export const CalendarDay = () => {
     const [currentDay, setCurrentDay] = useState(new Date())
     const [hover, setHover] = useState(false)
     const [shifts, setShifts] = useState<UserDayShift[]>([])
 
+    // @ts-ignore
+    const { date } = useParams();
+    
     const getShifts = async () => {
         console.log('before get')
         try {
+            console.log("props: # " + date)
             const result = (
                 await Axios.post<[]>(
                     'http://localhost:8080/api/fetchUsersShift',
-                    { date: props.date },
+                    { date: date },
                     { withCredentials: true }
                 )
             ).data
@@ -67,7 +73,7 @@ export const CalendarDay = props => {
                 {renderHeader()}
                 <div className="grid grid-cols-24 grid-flow-auto divide-x-2 divide-sky-800 overflow-x-hidden overflow-y-auto gap-x-0 gap-y-2 pb-1  border border-black bg-gray-200 justify-center">
                     {columns}
-                    
+
                     {shifts ? (
                         shifts.map(({ firstname, email, shift }) => {
                             return shift.map(({ startTime, endTime }, index) => {

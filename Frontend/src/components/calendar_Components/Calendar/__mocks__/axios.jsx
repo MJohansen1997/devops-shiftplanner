@@ -5,7 +5,7 @@ import { AxiosResponse } from 'axios';
 // const testJson = require('../../test.json');
 
 // Our mocked response
-const axiosResponse: AxiosResponse = {
+const axiosResponse = {
   data: {},
   status: 200,
   statusText: 'OK',

@@ -16,8 +16,13 @@
         "jsx": "react-jsx",
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": false,
-        // "types": ["jest"],
-        // "typeRoots": ["devops-shiftplanner/Backend/src/Types", "node_modules/@types"],
+        "types": ["jest"],
+        "typeRoots": ["devops-shiftplanner/Backend/src/Types", "node_modules/@types"]
     },
-    "include": ["./src/**/*.ts","./src/**/*.tsx", "src/loginPage/LoginJS.tsx", "tests", "src/components/calendar_Components/Calendar/CalendarUserFetches.test.tsx"]
+    "include": [
+        "./src/**/*.ts",
+        "src/loginPage/LoginJS.tsx",
+        "tests",
+        "src/components/calendar_Components/Calendar/CalendarUserFetches.test.tsx"
+    ]
 }
