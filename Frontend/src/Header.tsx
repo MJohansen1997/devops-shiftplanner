@@ -58,7 +58,7 @@ export const Header = props => {
                             Indstillinger
                         </button>
                     </div>
-                    <div className="p-2.5 hover:bg-lightPrimary dark:hover:bg-secondary">
+                    <div className="p-2.5 pl-4 hover:bg-lightPrimary dark:hover:bg-secondary">
                         <DarkModeIcon />
                         Dark mode <Switch className="p-0" onClick={() => applyTheme()} />
                     </div>
