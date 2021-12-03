@@ -15,7 +15,14 @@
         "noEmit": true,
         "jsx": "react-jsx",
         "noFallthroughCasesInSwitch": true,
-        "noImplicitAny": false
+        "noImplicitAny": false,
+        "types": ["jest" , "node", "@types/jest"],
+        "typeRoots": ["node_modules/@types"],
     },
-    "include": ["./src/**/*.ts", "src/loginPage/LoginJS.tsx"]
+    "include": [
+        "./src/**/*.ts",
+        "src/loginPage/LoginJS.tsx",
+        "**/tests/*.test.ts",
+        "src/components/calendar_Components/Calendar/CalendarUserFetches.test.tsx"
+    ],
 }
