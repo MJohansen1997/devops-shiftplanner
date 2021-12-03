@@ -221,7 +221,7 @@ export const Server = async () => {
                 startTime: req.body.startTime,
                 endTime: req.body.endTime } }})
 
-        res.send({ success: shifts })
+        res.send({ success: true })
     })
 
     app.get('/api', async (req, res) => {
