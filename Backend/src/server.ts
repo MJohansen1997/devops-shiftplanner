@@ -214,13 +214,6 @@ export const Server = async () => {
 
         console.log(req.body)
 
-        const shifts: IShift = {
-            username: req.body.username,
-            date: req.body.date,
-            startTime: req.body.startTime,
-            endTime: req.body.endTime
-        }
-
         await userColl.updateOne({username: req.body.username},
             {  $push: { shifts: {
                 _id: new ObjectId(),
