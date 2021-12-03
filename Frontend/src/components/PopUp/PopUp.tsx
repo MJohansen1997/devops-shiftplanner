@@ -1,7 +1,7 @@
 export const PopUp = props => {
     return props.trigger ? (
         <div
-            className="fixed flex top-0 left-0 justify-center items-center bg-gray-500 bg-opacity-25 w-screen h-screen"
+            className="z-10 fixed flex top-0 left-0 justify-center items-center bg-gray-500 bg-opacity-25 w-screen h-screen"
             id="PopUp-outer"
             data-testid="PopUp-frame"
         >

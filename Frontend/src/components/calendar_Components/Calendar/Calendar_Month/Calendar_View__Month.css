@@ -95,10 +95,10 @@ body {
 
 .calendar .body .cell {
     position: relative;
-    z-index: -1;
     height: 10em;
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
+    z-index: auto;
     overflow: hidden;
     cursor: pointer;
     background: var(--neutral-color);
@@ -127,7 +127,6 @@ body {
     opacity: 0;
     font-size: 8em;
     position: absolute;
-    z-index: -1;
     top: -.2em;
     right: -.05em;
     transition: .25s ease-out;
