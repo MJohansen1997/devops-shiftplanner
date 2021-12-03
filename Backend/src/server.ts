@@ -206,6 +206,28 @@ export const Server = async () => {
         res.send(users)
     })
 
+
+    app.post('/api/registerShift', async (req: RequestSession, res) => {
+        const args = req.body as Partial<Shift>
+
+        const authUser = await userColl.findOne({ _id: args.emp_id})
+
+        if (!args.emp_id) {
+            return res.send({success: false, errorMessage: 'Couldnt find emp_id'})
+        }
+        await userColl.updateOne({_id : args.emp_id},
+            { $push: { shift: {
+                        date: args.date,
+                        starTime: args.startTime ,
+                        endTime: args.endTime,
+                        role: args.role,
+                        sickLeave: args.sickLeave,
+                        description: args.description
+                    }}})
+
+        res.send({ success: true })
+    })
+
     app.get('/api', async (req, res) => {
         console.log('hello world')
         res.send('hi')
