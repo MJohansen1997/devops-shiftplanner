@@ -4,10 +4,16 @@ import MenuIcon from '@mui/icons-material/Menu'
 import PersonIcon from '@mui/icons-material/Person'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { Switch } from '@mui/material'
-import React, { useState } from 'react'
+import React, {useContext, useState} from 'react'
 import { useHistory } from 'react-router-dom'
+import LogoutIcon from '@mui/icons-material/Logout';
+import Axios from "axios";
+import { UserContext,} from './Context/UserContext'
 
 export const Header = props => {
+
+    const { user, setUser } = useContext(UserContext)
+
     let [expanded, setExpanded] = useState(false)
     let [theme, setTheme] = useState('light')
     const history = useHistory()
@@ -19,6 +25,21 @@ export const Header = props => {
         root.classList.remove(theme)
         root.classList.add(newTheme)
         setTheme(newTheme)
+    }
+
+    const doLogout = async () => {
+
+        const result = (
+            await Axios.post<{ success: true } | { success: false; errorMessage: string }>(
+                `${process.env.REACT_APP_URL}/api/logout`,
+                { withCredentials: true }
+            )
+        ).data
+        console.log(result.success)
+        if (result.success) {
+            setUser({ id: '', role: false, loggedOn: false })
+            history.push('/login')
+        }
     }
 
     return (
@@ -46,22 +67,22 @@ export const Header = props => {
             </div>
             {expanded ? (
                 <div className="z-10 absolute grid grid-cols-1 top-20 right-3 bg-lightSecondary dark:bg-primary rounded-sm border-l-2 border-r-2 border-b-2 text-white transition duration-500 ease-in-out">
-                    <div className="p-4 hover:bg-lightPrimary dark:hover:bg-secondary">
-                        <button onClick={() => history.push(`/myprofile`)}>
+                        <button className="p-4 text-left hover:bg-lightPrimary dark:hover:bg-secondary" onClick={() => history.push(`/myprofile`)}>
                             <PersonIcon />
                             Min profil
                         </button>
-                    </div>
-                    <div className="p-4 hover:bg-lightPrimary dark:hover:bg-secondary">
-                        <button onClick={() => history.push(`/settings`)}>
+                        <button className="p-4 text-left hover:bg-lightPrimary dark:hover:bg-secondary items-start" onClick={() => history.push(`/settings`)}>
                             <SettingsIcon />
                             Indstillinger
                         </button>
-                    </div>
                     <div className="p-2.5 pl-4 hover:bg-lightPrimary dark:hover:bg-secondary">
                         <DarkModeIcon />
                         Dark mode <Switch className="p-0" onClick={() => applyTheme()} />
                     </div>
+                        <button className="p-4 text-left hover:bg-lightPrimary dark:hover:bg-secondary" onClick={() => doLogout()}>
+                            <LogoutIcon/>
+                            Log ud
+                        </button>
                 </div>
             ) : null}
         </div>
