@@ -17,6 +17,9 @@ import { Link, useHistory, useParams } from 'react-router-dom'
 import './Calendar_View__Month.css'
 import { ShiftComponent } from './Calender_Shift_Component'
 import Axios from 'axios'
+import {RegisterShiftForm} from "../../../RegisterForm/RegisterShift.tsx";
+import {DeleteShiftForm} from "../../../RegisterForm/DeleteShift.tsx";
+
 
 export const Calendar = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -54,10 +57,28 @@ export const Calendar = () => {
         setCurrentMonth(addMonths(currentMonth, -1))
     }
 
+    const [isOpen, setIsOpen] = useState(false)
+    const togglePop = () => {
+        setIsOpen(!isOpen)
+    }
+
     const renderHeader = () => {
         const dateFormat = 'LLLL yyyy'
         return (
             <div className="header">
+                <div className="grid-cols-2 divide-x-2">
+                    <button className="text-black " onClick={togglePop}>
+                        {' '}
+                        Opret vagt{' '}
+                    </button>
+                    {isOpen && <RegisterShiftForm popValues={{ isOpen, setIsOpen }} />}
+                    {/*<button className="text-black " onClick={togglePop}>*/}
+                    {/*    {' '}*/}
+                    {/*    Slet vagt{' '}*/}
+                    {/*</button>*/}
+                    {/*{isOpen && <DeleteShiftForm popValues={{ isOpen, setIsOpen }} />}*/}
+                </div>
+
                 <div className="icon cursor-pointer ml-5" onClick={prevMonth}>
                     {' '}
                     chevron_left{' '}
