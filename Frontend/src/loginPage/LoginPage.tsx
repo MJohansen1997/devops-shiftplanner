@@ -16,7 +16,6 @@ export const LoginPage = () => {
     })
 
     const doLogin = async () => {
-        console.log(authentication)
         const result = (
             await Axios.post<
                 { success: true; data: { id: string; role: boolean } } | { success: false; errorMessage: string }

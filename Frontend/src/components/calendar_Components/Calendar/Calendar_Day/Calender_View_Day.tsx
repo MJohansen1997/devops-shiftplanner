@@ -1,25 +1,25 @@
+import Axios from 'axios'
 import { addDays, format } from 'date-fns'
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
 import { UserDayShift } from '../../../../../../Backend/src/Types'
-// import { IFruitData, User} from 'devops-shiftplanner/Backend/src/Types'
-import { getDayShifts } from '../CalendarUserFetches'
-
-type dateyoink = {
-    date: string
-}
-
-export const CalendarDay = () => {
+import React, { useEffect, useState } from 'react'
+export const CalendarDay = props => {
     const [currentDay, setCurrentDay] = useState(new Date())
     const [hover, setHover] = useState(false)
-    const [shifts, setShifts] = useState<UserDayShift[] | undefined>([])
-
-    const { date } = useParams<dateyoink>()
+    const [shifts, setShifts] = useState<UserDayShift[]>([])
 
     const getShifts = async () => {
+        console.log('before get')
         try {
-            const fetch = await getDayShifts(date)
-            if (fetch !== undefined) setShifts(fetch)
+            const result = (
+                await Axios.post<[]>(
+                    'http://localhost:8080/api/fetchUsersShift',
+                    { date: props.date },
+                    { withCredentials: true }
+                )
+            ).data
+            setShifts(result)
+            console.log('printing result of fetch of users\n')
+            console.log(result)
         } catch (e) {
             console.log('couldnt fetch user shifts: ' + e)
         }
@@ -70,28 +70,24 @@ export const CalendarDay = () => {
 
                     {shifts ? (
                         shifts.map(({ firstname, email, shift }) => {
-                            return shift ? (
-                                shift.map(({ startTime, endTime }, index) => {
-                                    return (
-                                        <>
-                                            <div
-                                                className={`flex flex-col border-2 border-black col-start-${
-                                                    startTime + 1
-                                                } col-span-${
-                                                    endTime - startTime
-                                                } col-end-${endTime} p-1 bg-sky-200 hover:bg-sky-400 text-black font-bold justify-center items-center `}
-                                                key={index}
-                                            >
-                                                <p className="flex w-full text-sm"> {firstname} </p>
-                                                <p className="flex w-full text-sm"> {email} </p>
-                                            </div>
-                                            <div className="span-1"></div>
-                                        </>
-                                    )
-                                })
-                            ) : (
-                                <div></div>
-                            )
+                            return shift.map(({ startTime, endTime }, index) => {
+                                return (
+                                    <>
+                                        <div
+                                            className={`flex flex-col border-2 border-black col-start-${
+                                                startTime + 1
+                                            } col-span-${
+                                                endTime - startTime
+                                            } col-end-${endTime} p-1 bg-sky-200 hover:bg-sky-400 text-black font-bold justify-center items-center `}
+                                            key={index}
+                                        >
+                                            <p className="flex w-full text-sm"> {firstname} </p>
+                                            <p className="flex w-full text-sm"> {email} </p>
+                                        </div>
+                                        <div className="span-1"></div>
+                                    </>
+                                )
+                            })
                         })
                     ) : (
                         <div> Loading elements.. </div>
