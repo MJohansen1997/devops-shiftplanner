@@ -15,7 +15,14 @@
         "noEmit": true,
         "jsx": "react-jsx",
         "noFallthroughCasesInSwitch": true,
-        "noImplicitAny": false
+        "noImplicitAny": false,
+        "types": ["jest"],
+        "typeRoots": ["devops-shiftplanner/Backend/src/Types", "node_modules/@types"]
     },
-    "include": ["./src/**/*.ts", "src/loginPage/LoginJS.tsx"]
+    "include": [
+        "./src/**/*.ts",
+        "src/loginPage/LoginJS.tsx",
+        "tests",
+        "src/components/calendar_Components/Calendar/CalendarUserFetches.test.tsx"
+    ]
 }

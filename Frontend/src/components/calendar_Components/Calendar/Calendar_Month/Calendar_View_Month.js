@@ -13,7 +13,7 @@ import {
     startOfWeek,
 } from 'date-fns'
 import React, { useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import './Calendar_View__Month.css'
 import { ShiftComponent } from './Calender_Shift_Component'
 import Axios from 'axios'
@@ -45,9 +45,6 @@ export const Calendar = () => {
         });
     }, [currentMonth])
 
-    const handleRoute = ({ onClick }) => {
-        history.push(`/calenderDay`)
-    }
 
     const nextMonth = () => {
         setCurrentMonth(addMonths(currentMonth, 1))
@@ -121,27 +118,28 @@ export const Calendar = () => {
                     <div
                         className={`col cell ${!isSameMonth(day, monthStart) ? 'disabled' : ''}`}
                         key={day}
-                        onClick={() => history.push('/calendarDay')}
+                        // onClick={() => history.push('/calendarDay')}
                     >
                         <div className="number font-bold float-right pr-3 pt-3 text-xs ">{formattedDate}</div>
-                        <div className="clear-right overflow-y-auto h-32 text-base disable-scrollbars">
-                            {workingUsers.map(({ firstname, shifts }) =>
-                                <ul>
-                                    {shifts.map(({ date, startTime, endTime }) =>
-                                    // Link for routing to day page
-                                    isSameDay(day, parseISO(date)) ? (
-                                        <li className={'float-left'}>
-                                            <Link to="/calendarDay">
-                                                <ShiftComponent name={firstname} timeStart={startTime} timeEnd={endTime} />
-                                            </Link>{' '}
-                                        </li>
-                                    ) : (
-                                        <li className='false'/>
-                                    )
+                        <Link to={`/calendarDay/${format(day, 'yyyy-MM-dd')}`}>
+                            <div className="clear-right overflow-y-auto h-32 text-base disable-scrollbars">
+                                {workingUsers.map(({ firstname, shifts }) =>
+                                    <ul>
+                                        {shifts.map(({ date, startTime, endTime }) =>
+                                        // Link for routing to day page
+                                        isSameDay(day, parseISO(date)) ? (
+                                            <li className={'float-left'}>
+                                                    <ShiftComponent name={firstname} timeStart={startTime} timeEnd={endTime} />
+                                                {' '}
+                                            </li>
+                                        ) : (
+                                            <li className='false'/>
+                                        )
+                                    )}
+                                    </ul>
                                 )}
-                                </ul>
-                            )}
-                        </div>
+                            </div>
+                        </Link>
                     </div>
                 )
                 day = addDays(day, 1)
