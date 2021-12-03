@@ -1,14 +1,13 @@
 import {useTable, usePagination} from 'react-table'
 import React, {useEffect, useState} from 'react'
-import { useHistory } from 'react-router'
-import { EmployeeDisplay } from '../../../../Backend/src/Types'
+import {useHistory} from 'react-router'
+import {EmployeeDisplay} from '../../../../Backend/src/Types'
 import {data} from './Table_Component'
 
 import {Button, PageButton} from "./Table_Button.js";
-import { ChevronDoubleLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleRightIcon } from '@heroicons/react/solid'
+import {ChevronDoubleLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleRightIcon} from '@heroicons/react/solid'
 import Axios from "axios";
-import { TableOptions } from "../../react-table-config";
-
+import {TableOptions} from "../../react-table-config";
 
 
 export const EmployeeTable = () => {
@@ -104,7 +103,7 @@ export const EmployeeTable = () => {
 
     const getAllUsers = async () => {
         const result = (
-            await Axios.get('/api/getEmployees', { withCredentials: true })
+            await Axios.get(`${process.env.REACT_APP_URL}/api/getEmployees`, {withCredentials: true})
         ).data
 
         setData(result)
@@ -113,7 +112,7 @@ export const EmployeeTable = () => {
     const getAvatar = (image: Buffer) => {
         if (typeof image === 'undefined') {
             return (
-                <img className="object-scale-down h-12 w-full" src="https://freesvg.org/img/abstract-user-flat-4.png" />
+                <img className="object-scale-down h-12 w-full" src="https://freesvg.org/img/abstract-user-flat-4.png"/>
             )
         }
         return image
@@ -122,7 +121,7 @@ export const EmployeeTable = () => {
         getAllUsers()
     }, [])
 
-    const tableInstance = useTable({columns, data},usePagination)
+    const tableInstance = useTable({columns, data}, usePagination)
 
     const {
         getTableProps,
@@ -176,39 +175,32 @@ export const EmployeeTable = () => {
                     ))}
                 </thead>
                 {/* Apply the table body props */}
-                <tbody className="divide-y bg-lightgrey" {...getTableBodyProps()}>
+                <tbody className="divide-y bg-lightSecondary dark:bg-primary" {...getTableBodyProps()}>
                 {// Loop over the table rows
                     // while using page, insted of rows
                     // it shows only the rows for the active page - the amount of rows is a page
-                    page.map(row => {
+                    page.map((row, index) => {
                         // Prepare the row for display
                         prepareRow(row)
                         return (
                             // Apply the row props
                             <tr className="text-center" {...row.getRowProps()}>
                                 {// Loop over the rows cells
-                                    row.cells.map(cell => {
-                                        // Apply the cell props
-                                        return (
-                                            /*<td className="p-4" {...cell.getCellProps()}>
-                                                {// Render the cell contents
-                                                    cell.render('Cell')}
-                                            </td>*/
+                                    // Apply the cell props
+                                    /*<td className="p-4" {...cell.getCellProps()}>
+                                        {// Render the cell contents
+                                            cell.render('Cell')}
+                                    </td>*/
 
-                                            data.map(d => {
-                                                return(
-                                                    <>
-                                                        {/*<td>{getAvatar(d.avatar)}</td>*/}
-                                                        <td>{cell.render(d.firstname)}</td>
-                                                        {/*<td>{cell.render(d.birthday)}</td>*/}
-                                                        <td>{cell.render(d.jobposition)}</td>
-                                                        <td>{cell.render(d.phone)}</td>
-                                                        <td>{cell.render(d.email)}</td>
-                                                    </>
-                                            )
-                                            })
-                                        )
-                                    })}
+                                    <>
+                                        <td>{getAvatar(data[index]?.avatar)}</td>
+                                        <td>{data[index]?.firstname}</td>
+                                        <td>{data[index]?.birthday}</td>
+                                        <td>{data[index]?.jobposition}</td>
+                                        <td>{data[index]?.phone}</td>
+                                        <td>{data[index]?.email}</td>
+                                    </>
+                                }
                             </tr>
                         )
                     })}
@@ -216,19 +208,19 @@ export const EmployeeTable = () => {
             </table>
 
 
-
             {/* Pagination */}
             <div className="py-3 flex items-center justify-between">
                 <div className="flex-1 flex justify-between sm:hidden">
                     {/*Is showed then the there is a small window width*/}
                     <Button className="" onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</Button>
-                    <Button  className="" onClick={() => nextPage()} disabled={!canNextPage}>Next</Button>
+                    <Button className="" onClick={() => nextPage()} disabled={!canNextPage}>Next</Button>
                 </div>
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                     <div className="flex gap-x-2 items-baseline">
                         <span className="text-sm text-white">
                             {/*Page x out of y*/}
-                            Page <span className="font-medium">{state.pageIndex + 1}</span> of <span className="font-medium">{pageOptions.length}</span>
+                            Page <span className="font-medium">{state.pageIndex + 1}</span> of <span
+                            className="font-medium">{pageOptions.length}</span>
                         </span>
                         <label>
                             {/*amount of listed employees*/}
@@ -249,7 +241,8 @@ export const EmployeeTable = () => {
                         </label>
                     </div>
                     <div>
-                        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                             aria-label="Pagination">
                             <PageButton
                                 className="rounded-l-md"
                                 onClick={() => gotoPage(0)}
@@ -257,7 +250,7 @@ export const EmployeeTable = () => {
                             >
                                 {/*To the first page - dobbelt left arrow*/}
                                 <span className="sr-only">First</span>
-                                <ChevronDoubleLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                <ChevronDoubleLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true"/>
                             </PageButton>
                             <PageButton
                                 className=""
@@ -266,7 +259,7 @@ export const EmployeeTable = () => {
                             >
                                 {/*Go one page back - one left arrow*/}
                                 <span className="sr-only">Previous</span>
-                                <ChevronLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                <ChevronLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true"/>
                             </PageButton>
                             <PageButton
                                 className=""
@@ -275,7 +268,7 @@ export const EmployeeTable = () => {
                                 }>
                                 {/*Go one page forward - one right arrow*/}
                                 <span className="sr-only">Next</span>
-                                <ChevronRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                <ChevronRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true"/>
                             </PageButton>
                             <PageButton
                                 className="rounded-r-md"
@@ -284,7 +277,7 @@ export const EmployeeTable = () => {
                             >
                                 {/*Go to last page - dobbel right arrow*/}
                                 <span className="sr-only">Last</span>
-                                <ChevronDoubleRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                <ChevronDoubleRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true"/>
                             </PageButton>
                         </nav>
                     </div>
