@@ -1,13 +1,17 @@
 import axios from 'axios'
-import { UserDayShift } from '../../../../../Backend/src/Types'
+import {
+    UserDayShift
+} from '../../../../../Backend/src/Types'
 
-export const getDayShifts = async (date: string): Promise<UserDayShift[] | undefined> => {
+export const getDayShifts = async (date: string): Promise < UserDayShift[] | undefined > => {
     try {
         const fetchUserShifts = (
-            await axios.post<UserDayShift[]>(
-                `${process.env.REACT_APP_URL}/api/fetchUsersShift`,
-                { date: date },
-                { withCredentials: true }
+            await axios.post < UserDayShift[] > (
+                `${process.env.REACT_APP_URL}/api/fetchUsersShift`, {
+                    date: date
+                }, {
+                    withCredentials: true
+                }
             )
         ).data
         if (fetchUserShifts == undefined) {
