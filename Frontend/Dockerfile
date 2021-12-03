@@ -9,5 +9,6 @@ COPY Frontend ./
 RUN ls -l
 RUN yarn build
 COPY Frontend/nodeServer.js nodeServer.js
+ENV HTTPS true
 EXPOSE 3000
 CMD [ "node", "nodeServer.js" ]
