@@ -1,7 +1,7 @@
 import Axios from 'axios'
-import { addDays, format } from 'date-fns'
+import { add, addDays, format } from 'date-fns'
 import { UserDayShift } from '../../../../../../Backend/src/Types'
-import { useParams } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
 import React, { useEffect, useState} from 'react'
 
 export const CalendarDay: React.FC = () => {
@@ -16,7 +16,7 @@ export const CalendarDay: React.FC = () => {
     const getShifts = async () => {
         // console.log('before get')
         try {
-            const result = (await Axios.post<UserDayShift[]>('http://localhost:8080/api/fetchUsersShift', { date: date }, { withCredentials: true })).data
+            const result = (await Axios.post<UserDayShift[]>(`${process.env.REACT_APP_URL}/api/fetchUsersShift`, { date: date }, { withCredentials: true })).data
             setShifts(result)
             setLoading(false)
             
@@ -34,6 +34,8 @@ export const CalendarDay: React.FC = () => {
         getShifts()
     }, [])
 
+    
+    const history = useHistory();
     function nextDay() {
         setCurrentDay(addDays(currentDay, +1))
     }
@@ -50,15 +52,18 @@ export const CalendarDay: React.FC = () => {
         const dateFormat = 'B..BBB'
         return (
             <div className=" max-wheader bg-sky-800 text-black font-bold">
-                <div className="icon cursor-pointer ml-5" onClick={prevDay}>
+                  
+                <button className="icon cursor-pointer ml-5" onClick={prevDay}>
                     {' '}
                     chevron_left{' '}
-                </div>
+                </button>
+                
                 <span className=""> {format(currentDay, dateFormat)} </span>
                 <div className="icon cursor-pointer" onClick={nextDay}>
                     {' '}
                     chevron_right{' '}
                 </div>
+
             </div>
         )
     }

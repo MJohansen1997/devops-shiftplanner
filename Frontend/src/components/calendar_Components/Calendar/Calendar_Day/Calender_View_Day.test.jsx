@@ -48,7 +48,7 @@ describe('calendar day view', () => {
    })
    
    it('test when data havent fetched', async () => {
-      mock.onPost('http://localhost:8080/api/fetchUsersShift').networkError();
+      mock.onPost(`${process.env.REACT_APP_URL}/api/fetchUsersShift`).networkError();
       
       const {getByTestId}= render(<CalendarDay/>)   
          
@@ -64,15 +64,10 @@ describe('calendar day view', () => {
    it(('test when shift data has loaded'), async () => {
       const date = "2021-12-14"
 
-      mock.onPost('http://localhost:8080/api/fetchUsersShift').reply(200, user)
+      mock.onPost(`${process.env.REACT_APP_URL}/api/fetchUsersShift`).reply(200, user)
       
       const {getByTestId, getByText} = render(<CalendarDay/>)
       const grid = getByTestId("grid")  
-      
-      
-      const div = await waitFor(() => {
-         getByTestId("resolvedshifts")
-      })
       
       await waitFor(() => expect(getByTestId("resolvedshifts")).toHaveTextContent("mikkel"))
       
