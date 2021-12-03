@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
 export const ShiftComponent = props => {
-    const [worker, setWorker] = useState({})
-
-    const [day, setDay] = useState(null)
-    const [time, setTime] = useState([])
-    const [workAssignment, setWorkAssignment] = useState('')
-    const [description, setDescription] = useState('')
 
     return (
         <div className="flex clear-right pt-3 pl-2 items-center justify-center">

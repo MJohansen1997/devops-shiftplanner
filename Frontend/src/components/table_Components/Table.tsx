@@ -3,7 +3,6 @@ import React, {useEffect, useState} from 'react'
 import {useHistory} from 'react-router'
 import {EmployeeDisplay} from '../../../../Backend/src/Types'
 import {data} from './Table_Component'
-
 import {Button, PageButton} from "./Table_Button.js";
 import {ChevronDoubleLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleRightIcon} from '@heroicons/react/solid'
 import Axios from "axios";
@@ -49,57 +48,8 @@ export const EmployeeTable = () => {
         []
     )
 
-    /*const data = React.useMemo(
-        () => [
-            {
-                image:"https://freesvg.org/img/abstract-user-flat-4.png",
-                username: 'Brin',
-                bday: 26,
-                jobposition: 'din mor',
-                phone: '12345678',
-                mail: ' email@email.com'
-            }, {
-                image: "https://freesvg.org/img/abstract-user-flat-4.png",
-                username: 'Jac',
-                bday: 22,
-                jobposition: 'din mor',
-                phone: '12345678',
-                mail: ' email@email.com'
-            }, {
-                image: "https://freesvg.org/img/abstract-user-flat-4.png",
-                username: 'Mik',
-                bday: 40,
-                jobposition: 'din mor',
-                phone: '12345678',
-                mail: ' email@email.com'
-            }, {
-                image: "https://freesvg.org/img/abstract-user-flat-4.png",
-                username: 'Stef',
-                bday: 30,
-                jobposition: 'din mor',
-                phone: '12345678',
-                mail: ' email@email.com'
-            }, {
-                image: "https://freesvg.org/img/abstract-user-flat-4.png",
-                username: 'Shan',
-                bday: 32,
-                jobposition: 'din mor',
-                phone: '12345678',
-                mail: ' email@email.com'
-            }, {
-                image: "https://freesvg.org/img/abstract-user-flat-4.png",
-                username: 'yieks',
-                bday: 37,
-                jobposition: 'din mor',
-                phone: '12345678',
-                mail: ' email@email.com'
-            },
-        ],
-        []
-    )*/
-
-
     const [data, setData] = useState<EmployeeDisplay[]>([])
+    const [avatars, setAvatars] = useState([])
 
     const getAllUsers = async () => {
         const result = (
@@ -107,8 +57,22 @@ export const EmployeeTable = () => {
         ).data
 
         setData(result)
-        console.log(result)
     }
+
+    const getAvatars = async () => {
+        let config = {
+            headers: {"x-api-key": "2033d344-8183-48f8-ab39-7bb33adc45ef"},
+            params: {
+                limit: "10"
+            },
+        }
+        const result = (
+        await Axios.get('https://api.thecatapi.com/v1/images/search', config)
+        ).data
+
+        setAvatars(result)
+    }
+
     const getAvatar = (image: Buffer) => {
         if (typeof image === 'undefined') {
             return (
@@ -119,6 +83,7 @@ export const EmployeeTable = () => {
     }
     useEffect(() => {
         getAllUsers()
+        getAvatars()
     }, [])
 
     const tableInstance = useTable({columns, data}, usePagination)
@@ -193,7 +158,15 @@ export const EmployeeTable = () => {
                                     </td>*/
 
                                     <>
-                                        <td>{getAvatar(data[index]?.avatar)}</td>
+                                    {avatars ? (<td><img
+                                            className=" max-w-18 max-h-18"
+                                            src={avatars[index]?.url}
+                                            alt={data[index]?.firstname}
+                                        /></td>) : <td><img
+                                        className=" max-w-18 max-h-18"
+                                        src="https://toppng.com/uploads/preview/roger-berry-avatar-placeholder-11562991561rbrfzlng6h.png"
+                                        alt={data[index]?.firstname}
+                                    /></td>}
                                         <td>{data[index]?.firstname}</td>
                                         <td>{data[index]?.birthday}</td>
                                         <td>{data[index]?.jobposition}</td>

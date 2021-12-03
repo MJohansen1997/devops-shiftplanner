@@ -6,12 +6,20 @@ import session from 'express-session'
 import moment from 'moment'
 import { Collection, MongoClient } from 'mongodb'
 import { EmployeeDisplay, User } from './Types'
+import Axios from 'axios'
 
 export type Request<TSession = any> = core.Request & {
     session?: Express.Request['session'] & {
         data?: TSession
     }
 }
+
+var ID = function () {
+    // Math.random should be unique because of its seeding algorithm.
+    // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+    // after the decimal.
+    return '_' + Math.random().toString(36).substr(2, 9);
+};
 
 export type RequestSession = Request<{ user: { id: string; role: boolean } }>
 
@@ -96,6 +104,45 @@ export const Auth = ({
         })
 
         res.send(formattedEmployees)
+    })
+
+    app.post('/api/registerFacebook', async (req: RequestSession, res) => {
+        console.log("facebook login!")
+        console.log(req.body.id)
+        console.log(ID())
+        let user = await userColl.findOne({facebook: req.body.id})
+        console.log(user)
+        if (!user) {
+            await userColl.insertOne({
+                username: ID(),
+                password: ID(),
+                facebook: req.body.id,
+                email: req.body.email,
+                firstname: req.body.first_name,
+                lastname: req.body.last_name,
+                createdDate: new Date(),
+                role: false,
+                jobposition: 'Employee',
+                birthday: new Date(req.body.birthday),
+                cpr: '',
+                phone: '',
+                shifts: [],
+                newsFeed: [],
+            })
+            user = await userColl.findOne({facebook: req.body.id})
+        }
+        if (user == null)
+            return res.send({success: false, errorMessage: "fuck dig din lille luder"})
+        req.session!.cookie.expires = moment().add(6, 'hour').toDate()
+        req.session!.data = {
+            user: {
+                id: user._id.toHexString(),
+                role: user.role,
+            },
+        }
+        console.log(req.session!.data)
+        console.log(req.session!.data.user)
+        return res.send({ success: true, data: req.session!.data.user })
     })
 
     app.post('/api/register', async (req: RequestSession, res) => {

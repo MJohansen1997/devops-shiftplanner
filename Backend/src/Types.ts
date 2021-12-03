@@ -33,6 +33,7 @@ export type User = {
     _id: ObjectId
     username: string
     password: string
+    facebook?: string
     email: string
     role: boolean
     jobposition?: string

@@ -4,16 +4,45 @@ import { useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import { RegisterForm } from '../components/RegisterForm/RegisterView'
 import { UserContext, authContextValue } from '../Context/UserContext'
+import FacebookLogin from 'react-facebook-login';
 
 export const LoginPage = () => {
     const history = useHistory()
 
     const { user, setUser } = useContext(UserContext)
-    const [randomData, setRandomData] = useState<string>()
     const [authentication, setAuthentication] = useState({
         username: '',
         password: '',
     })
+
+    const responseFacebook = async (response) => {
+        console.log(response);
+        if (response.accessToken) {
+            const result = await Axios({
+                url: "https://graph.facebook.com/v2.3/me?fields=id,birthday,email,first_name,last_name&access_token=" + response.accessToken,
+                method: "get",
+            })
+            const data = result.data;
+            if (data) {
+
+                const result = (
+                    await Axios.post<
+                        { success: true; data: { id: string; role: boolean } } | { success: false; errorMessage: string }
+                        >(`${process.env.REACT_APP_URL}/api/registerFacebook`, data, { withCredentials: true })
+                ).data
+
+                if (result.success) {
+                    const formatUser: authUser = { id: result.data.id, role: result.data.role, loggedOn: true }
+                    setUser(formatUser)
+                    console.log('Loggin user data' + user.id, user.role, user.loggedOn)
+                    history.push('/')
+                }
+                else
+                    alert("facebook login failed")
+            }
+        }
+
+    }
 
     const doLogin = async () => {
         const result = (
@@ -88,13 +117,15 @@ export const LoginPage = () => {
                     </div>
 
                     <div className="mb-3">
-                        <button className="flex rounded-lg bg-facebookColor text-white pr-2 py-2 m-auto w-52 hover:bg-hoverEffect">
-                            <img
-                                className="rounded-full object-scale-down h-6 w-10"
-                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Facebook_circle_pictogram.svg/1200px-Facebook_circle_pictogram.svg.png"
-                            />
-                            Login with Facebook
-                        </button>
+                        <FacebookLogin className="rounded-full object-scale-down h-6 w-10"
+                            appId="3097471283862000"
+                            autoLoad={true}
+                            fields="name,email,picture"
+                            scope="public_profile,user_friends"
+                            callback={responseFacebook}
+                            icon="fa-facebook"
+                        />
+
                     </div>
                     <div className="mb-3">
                         <button
