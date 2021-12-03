@@ -57,8 +57,8 @@ export const RegisterForm = props => {
                 trigger={props.popValues.isOpen}
                 setTrigger={props.popValues.setIsOpen}
                 formtype="Create new account"
-                data-testId="PopUp"
-            >
+                data-testId="PopUp">
+                    
                 <div className="flex flex-col pt-4 pb-4 justify-center">
                     <div className="flex flex-col space-y-8 justify-center items-center font-bold">
                         <form className="flex flex-col space-y-3 items-center" onSubmit={handleSubmit}>

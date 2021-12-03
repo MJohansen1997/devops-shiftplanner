@@ -4,9 +4,8 @@ import emailValidator from 'email-validator'
 import core from 'express-serve-static-core'
 import session from 'express-session'
 import moment from 'moment'
-import { Collection, MongoClient } from 'mongodb'
-import { EmployeeDisplay, User } from './Types'
-import Axios from 'axios'
+import { Collection, MongoClient} from 'mongodb'
+import {EmployeeDisplay, Shift, User} from './Types'
 
 export type Request<TSession = any> = core.Request & {
     session?: Express.Request['session'] & {
@@ -149,19 +148,19 @@ export const Auth = ({
         const args = req.body as Partial<IRegisterProps>
 
         if (req.session && req.session.data) {
-            return res.send({ success: false, errorMessage: 'Already logged in' })
+            return res.send({success: false, errorMessage: 'Already logged in'})
         }
 
         if (!args.username || args.username.length < 3) {
-            return res.send({ success: false, errorMessage: 'Username is too short' })
+            return res.send({success: false, errorMessage: 'Username is too short'})
         }
 
         if (args.username.length > 20) {
-            return res.send({ success: false, errorMessage: 'Username is too long' })
+            return res.send({success: false, errorMessage: 'Username is too long'})
         }
 
         if (args.username.match(/[^-A-Za-z0-9._]/u)) {
-            return res.send({ success: false, errorMessage: 'Username contains invalid characters' })
+            return res.send({success: false, errorMessage: 'Username contains invalid characters'})
         }
 
         const v = passwordValidation(args)
@@ -171,29 +170,29 @@ export const Auth = ({
         }
 
         if (!args.email || args.email.length < 4) {
-            return res.send({ success: false, errorMessage: 'Email is too short' })
+            return res.send({success: false, errorMessage: 'Email is too short'})
         }
 
         //Suprise motherfucker
         if (!args.email || args.email.length > 64) {
-            return res.send({ success: false, errorMessage: 'Email is too long' })
+            return res.send({success: false, errorMessage: 'Email is too long'})
         }
 
         // If you read this you gay
         if (!emailValidator.validate(args.email)) {
-            return res.send({ success: false, errorMessage: 'Email has an invalid format' })
+            return res.send({success: false, errorMessage: 'Email has an invalid format'})
         }
 
-        if (await userColl.findOne({ username: new RegExp(args.username, 'i') })) {
-            return res.send({ success: false, errorMessage: 'Username is already taken' })
+        if (await userColl.findOne({username: new RegExp(args.username, 'i')})) {
+            return res.send({success: false, errorMessage: 'Username is already taken'})
         }
 
-        if (await userColl.findOne({ email: args.email })) {
-            return res.send({ success: false, errorMessage: 'Email is already taken' })
+        if (await userColl.findOne({email: args.email})) {
+            return res.send({success: false, errorMessage: 'Email is already taken'})
         }
 
         if (!args.password) {
-            return res.send({ success: false, errorMessage: 'No password supplied' })
+            return res.send({success: false, errorMessage: 'No password supplied'})
         }
 
         const pw = await bcrypt.hash(args.password, 10)

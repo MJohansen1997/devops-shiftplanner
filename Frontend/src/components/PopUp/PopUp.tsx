@@ -3,11 +3,13 @@ export const PopUp = props => {
         <div
             className="fixed flex top-0 left-0 justify-center items-center bg-gray-500 bg-opacity-25 w-screen h-screen"
             id="PopUp-outer"
+            data-testid="PopUp-frame"
         >
             <div className="relative flex flex-col flex-shrink bg-white p-3 w-1/6 rounded " id="PopUp-inner">
                 <button
                     className="absolute w-8 h-8 right-0 top-0 border-black rounded  font-bold"
                     onClick={() => props.setTrigger(false)}
+                    data-testid="PopUp-close"
                 >
                     {' '}
                     X{' '}

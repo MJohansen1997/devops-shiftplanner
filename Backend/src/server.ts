@@ -3,7 +3,7 @@ import express from 'express'
 import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
-import { authUser, DbSettings, EmployeeDisplay, IFruitData, Shift, User, UserDayShift } from './Types'
+import {authUser, DbSettings, EmployeeDisplay, IFruitData, IShift, Shift, User, UserDayShift} from './Types'
 
 require('dotenv').config()
 export const Server = async () => {
@@ -201,6 +201,28 @@ export const Server = async () => {
     app.post('/api/getUsersForMonth', async (req, res) => {
         const users = await userColl.find({ $or : [{"shifts.date": {$regex : req.body.date}}, {"shifts.date": {$regex : req.body.datep1}}, {"shifts.date": {$regex : req.body.datem1}}]}).toArray()
         res.send(users)
+    })
+
+
+    app.post('/api/registerShift', async (req, res) => {
+
+        console.log(req.body)
+
+        const shifts: IShift = {
+            username: req.body.username,
+            date: req.body.date,
+            startTime: req.body.startTime,
+            endTime: req.body.endTime
+        }
+
+        await userColl.updateOne({username: req.body.username},
+            {  $push: { shifts: {
+                _id: new ObjectId(),
+                date: req.body.date,
+                startTime: req.body.startTime,
+                endTime: req.body.endTime } }})
+
+        res.send({ success: shifts })
     })
 
     app.get('/api', async (req, res) => {

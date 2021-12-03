@@ -73,14 +73,20 @@ export type UserDayShift = {
 }
 
 export type Shift = {
-    _id: ObjectId
-    emp_id: ObjectId
+    _id?: ObjectId
     date: Date
     startTime: number
     endTime: number
     role?: string
     sickLeave?: boolean
     description?: string
+}
+
+export type IShift = {
+    username: string
+    date: Date
+    startTime: number
+    endTime: number
 }
 
 export type newsFeed = {
