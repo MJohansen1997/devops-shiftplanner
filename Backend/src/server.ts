@@ -3,8 +3,9 @@ import cors from 'cors'
 import express from 'express'
 import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
+import { json } from 'stream/consumers'
 import { Auth, RequestSession } from './Auth'
-import { authUser, DbSettings, EmployeeDisplay, IFruitData, User } from './Types'
+import { authUser, DbSettings, EmployeeDisplay, IFruitData, User, Shift, UserDayShift} from './Types'
 
 require('dotenv').config()
 export const Server = async () => {
@@ -67,31 +68,32 @@ export const Server = async () => {
 
     const fruitsColl = client.db('fruit').collection<IFruitData>('fruits')
     const userColl = client.db('shiftplanner').collection<User>('user')
+    const shiftColl = client.db('shiftplanner').collection<Shift>('shifts')
 
     app.post('/api/random', async (req: RequestSession, res) => {
         res.send('hellotherefriend')
     })
 
-    app.post('/api/login', async (req, res) => {
-        const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
+    // app.post('/api/login', async (req, res) => {
+    //     const authUser = await userColl.findOne({ username: new RegExp(req.body.username, 'i') })
 
-        if (!authUser) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
+    //     if (!authUser) {
+    //         return res.send({ success: false, errorMessage: 'Invalid password' })
+    //     }
 
-        if (!bcrypt.compareSync(req.body.password, authUser.password)) {
-            return res.send({ success: false, errorMessage: 'Invalid password' })
-        }
+    //     if (!bcrypt.compareSync(req.body.password, authUser.password)) {
+    //         return res.send({ success: false, errorMessage: 'Invalid password' })
+    //     }
 
-        //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
+    //     //req.session!.cookie.expires = moment().add(6, 'hour').toDate()
 
-        const user = {
-            id: authUser._id.toHexString(),
-            role: authUser.role,
-        }
+    //     const user = {
+    //         id: authUser._id.toHexString(),
+    //         role: authUser.role,
+    //     }
 
-        return res.send({ success: true, data: user })
-    })
+    //     return res.send({ success: true, data: user })
+    // })
 
     app.get('/api/getEmployees', async (req: RequestSession, res) => {
         // if (!req.session || !req.session.data) {
@@ -126,9 +128,55 @@ export const Server = async () => {
     })
 
     // Fetching all users for a specific date to use for the frontend calendar day view.
-    app.get('/api/getUsersForDay', async (req, res) => {
-        const users = await userColl.find(req).toArray()
-        res.send(users)
+    // REQ = DATE
+    app.post('/api/fetchUsersShift', async (req, res) => {
+        console.log("PRINTING REQ BODY: " + req.body.date)
+        // get a shift
+        // const shiftss = await shiftColl.find({date: req.body.date}).toArray()
+        const users = await userColl.find({shifts: {$elemMatch: {date: `${req.body.date}`}}}).toArray();
+        
+        
+        
+        const test = await userColl.aggregate([
+            {
+              $match: {shifts: {$elemMatch: {date: `${req.body.date}`}}}  
+            },
+            {
+                $project: {
+                    _id: 0,
+                    firstname : '$firstname',
+                    email: '$email',
+                    shifts: {
+                        $filter: {
+                            input: '$shifts',
+                            as: 'item',
+                            cond: { $eq: ['$$item.date', `${req.body.date}`] }
+                        }
+                    }
+                }
+            }
+        ]).toArray();
+        
+        
+        
+        
+        console.log("FETCH USERS: " + JSON.stringify(test))
+        
+        
+        // Format the users from mongod to the desired user shift information
+        const userShifts: UserDayShift[] = 
+            test.map(s => {
+                console.log(s)
+                return {
+                    firstname: s.firstname,
+                    email: s.email,
+                    shift: s.shifts
+                }
+            })
+    
+        console.log("\nUSERSHIFTS: " + JSON.stringify(userShifts))
+    
+        res.send(userShifts)
     })
 
     app.post('/api/getOneUser', async (req: RequestSession, res) => {
@@ -157,8 +205,10 @@ export const Server = async () => {
     })
 
     app.post('/api/getUsersForMonth', async (req, res) => {
-        const users = await userColl.find({"shifts.date": {$regex : "2021-11"}}).toArray()
-        // const users = await userColl.find({"shifts.date": {$regex : req}}).toArray()
+        //const users = await userColl.find({"shifts.date": {$regex : "2021-11"}}).toArray()
+        console.log(req.body.date);
+        //const users = await userColl.find({"shifts.date": {$regex : req.body.date}}).toArray()
+        const users = await userColl.find({"shifts.date": {$regex : req.body.date}}).toArray()
         res.send(users)
     })
 
