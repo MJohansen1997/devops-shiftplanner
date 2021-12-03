@@ -1,7 +1,8 @@
 import Axios from 'axios'
-import { Shift } from '../../../../Backend/src/Types'
-import { useState } from 'react'
+import { Shift , User} from '../../../../Backend/src/Types'
+import {useContext, useState} from 'react'
 import { PopUp } from '../PopUp/PopUp'
+import {UserContext} from "../../Context/UserContext";
 
 export const RegisterShiftForm = props => {
     const [popUp, setPopUp] = useState(props.setPopTrue)
@@ -14,9 +15,8 @@ export const RegisterShiftForm = props => {
         endTime: '',
     })
 
-
     const doRegister = async () => {
-        const result = await Axios.post(`${process.env.REACT_APP_URL}/api/registerShift`, formData, {
+        const result = await Axios.post(`${process.env.REACT_APP_URL}/api/registerShift`, shift, {
             withCredentials: true,
         })
         console.log(result)
@@ -35,7 +35,7 @@ export const RegisterShiftForm = props => {
         setPopUp(false)
         console.log(shift)
 
-        // doRegister()
+         doRegister()
     }
 
     return props.popValues.isOpen ? (
@@ -55,7 +55,7 @@ export const RegisterShiftForm = props => {
                                     <input
                                         type="text"
                                         placeholder="Username"
-                                        name="emp_id"
+                                        name="username"
                                         value={shift.username}
                                         onChange={handleChange}
                                     />

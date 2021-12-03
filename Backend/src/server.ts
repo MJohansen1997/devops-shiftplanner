@@ -3,7 +3,7 @@ import express from 'express'
 import { connect, ObjectId } from 'mongodb'
 import multer from 'multer'
 import { Auth, RequestSession } from './Auth'
-import { authUser, DbSettings, EmployeeDisplay, IFruitData, Shift, User, UserDayShift } from './Types'
+import {authUser, DbSettings, EmployeeDisplay, IFruitData, IShift, Shift, User, UserDayShift} from './Types'
 
 require('dotenv').config()
 export const Server = async () => {
@@ -207,25 +207,25 @@ export const Server = async () => {
     })
 
 
-    app.post('/api/registerShift', async (req: RequestSession, res) => {
-        const args = req.body as Partial<Shift>
+    app.post('/api/registerShift', async (req, res) => {
 
-        const authUser = await userColl.findOne({ _id: args.emp_id})
+        console.log(req.body)
 
-        if (!args.emp_id) {
-            return res.send({success: false, errorMessage: 'Couldnt find emp_id'})
+        const shifts: IShift = {
+            username: req.body.username,
+            date: req.body.date,
+            startTime: req.body.startTime,
+            endTime: req.body.endTime
         }
-        await userColl.updateOne({_id : args.emp_id},
-            { $push: { shift: {
-                        date: args.date,
-                        starTime: args.startTime ,
-                        endTime: args.endTime,
-                        role: args.role,
-                        sickLeave: args.sickLeave,
-                        description: args.description
-                    }}})
 
-        res.send({ success: true })
+        await userColl.updateOne({username: req.body.username},
+            {  $push: { shifts: {
+                _id: new ObjectId(),
+                date: req.body.date,
+                startTime: req.body.startTime,
+                endTime: req.body.endTime } }})
+
+        res.send({ success: shifts })
     })
 
     app.get('/api', async (req, res) => {
