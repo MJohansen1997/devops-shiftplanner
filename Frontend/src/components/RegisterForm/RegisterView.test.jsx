@@ -1,28 +1,34 @@
-import React from 'react'
-import { PopUp } from '../PopUp/PopUp'
+import React, {useState} from 'react'
 import {RegisterForm} from './RegisterView'
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, fireEvent, cleanup } from '@testing-library/react';
 
 afterEach(cleanup);
 
-
-// jest.mock('../PopUp/PopUp', () => (props) => {
-// })
-// jest.fn('../PopUp/PopUp');
-jest.mock('../PopUp/PopUp')
-
 describe('RegisterView', () => {
-   test('', () => {
-      const {getByTestId} = render(<RegisterForm popValues={true}/>)
+   test('That register pops up', () => {
+      const Wrapper = () => {
+         const [isOpen, setIsOpen] = useState(true)
+         return <RegisterForm popValues={{isOpen, setIsOpen}}/>
+      }
+
       
+      const {getByTestId} = render(<Wrapper/>)
+      
+      expect(getByTestId("PopUp-frame")).toBeInTheDocument()
+      
+   })
    
+   test('Thar register closes', () => {
+      const Wrapper = () => {
+         const [isOpen, setIsOpen] = useState(true)
+         return <RegisterForm popValues={{isOpen, setIsOpen}}/>
+      }
+
+      const {getByTestId, queryByTestId} = render(<Wrapper/>)
       
-      // expect(PopUp).toBeInTheDocument(test)
+      expect(getByTestId("PopUp-frame")).toBeInTheDocument()
+      fireEvent.click(getByTestId("PopUp-close"))
+      expect(queryByTestId("PopUp-frame")).not.toBeInTheDocument()
       
-      // expect().toHaveBeenCalledWith(
-      //    expect.objectContaining({
-      //      trigger: true,
-      //    })
-      // )  
    })
 })
