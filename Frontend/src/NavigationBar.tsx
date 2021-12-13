@@ -14,7 +14,7 @@ export const NavigationBar = props => {
     const titles = ['Hjem', 'Vagtplan', 'Dine vagter', 'Medarbejdere']
 
     const IconHeader = title => {
-        <p className="pl-3">{title}</p>
+        ;<p className="pl-3">{title}</p>
     }
 
     function handleCollapse() {
@@ -60,18 +60,6 @@ export const NavigationBar = props => {
                             </button>
                         </li>
                     </button>
-                    {user.role && (
-                        <button>
-                            <li className="flex h-16 hover:bg-lightSecondary dark:hover:bg-secondary rounded-sm px-5 py-4">
-                                <button onClick={() => history.push(`/employees`)}>
-                                    <div className="flex flex-row">
-                                        <PageView /> <p className="pl-3">Testing</p>{' '}
-                                    </div>
-                                </button>
-                            </li>
-                        </button>
-                    )}
-
                     {user.role && (
                         <button>
                             <li className="flex h-16 hover:bg-lightSecondary dark:hover:bg-secondary rounded-sm px-5 py-4">
